@@ -219,7 +219,7 @@ QuicL5Protocol::DispatchSend (Ptr<Packet> data, uint64_t streamId)
 
   Ptr<QuicStreamBase> stream = SearchStream (streamId);
 
-  if (stream == nullptr)
+  if (!stream)
     {
       CreateStream (QuicStream::SENDER, streamId);
     }
@@ -282,7 +282,7 @@ QuicL5Protocol::DispatchRecv (Ptr<Packet> data, Address &address)
         {
           Ptr<QuicStreamBase> stream = SearchStream (sub.GetStreamId ());
 
-          if (stream != nullptr
+          if (stream
               and (stream->GetStreamDirectionType () == QuicStream::RECEIVER
                    or stream->GetStreamDirectionType ()
                    == QuicStream::BIDIRECTIONAL))

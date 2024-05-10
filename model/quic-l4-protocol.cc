@@ -184,7 +184,7 @@ QuicL4Protocol::UdpBind (Ptr<QuicSocketBase> socket)
   for (it = m_quicUdpBindingList.begin (); it != m_quicUdpBindingList.end (); ++it)
     {
       Ptr<QuicUdpBinding> item = *it;
-      if (item->m_quicSocket == socket and item->m_budpSocket == nullptr)
+      if (item->m_quicSocket == socket and !item->m_budpSocket)
         {
           Ptr<Socket> udpSocket = CreateUdpSocket ();
           res = udpSocket->Bind ();
@@ -206,7 +206,7 @@ QuicL4Protocol::UdpBind6 (Ptr<QuicSocketBase> socket)
   for (it = m_quicUdpBindingList.begin (); it != m_quicUdpBindingList.end (); ++it)
     {
       Ptr<QuicUdpBinding> item = *it;
-      if (item->m_quicSocket == socket and item->m_budpSocket6 == nullptr)
+      if (item->m_quicSocket == socket and !item->m_budpSocket6)
         {
           Ptr<Socket> udpSocket6 = CreateUdpSocket6 ();
           res = udpSocket6->Bind ();
@@ -230,7 +230,7 @@ QuicL4Protocol::UdpBind (const Address &address, Ptr<QuicSocketBase> socket)
       for (it = m_quicUdpBindingList.begin (); it != m_quicUdpBindingList.end (); ++it)
         {
           Ptr<QuicUdpBinding> item = *it;
-          if (item->m_quicSocket == socket and item->m_budpSocket == nullptr)
+          if (item->m_quicSocket == socket and !item->m_budpSocket)
             {
               Ptr<Socket> udpSocket = CreateUdpSocket ();
               res = udpSocket->Bind (address);
@@ -247,7 +247,7 @@ QuicL4Protocol::UdpBind (const Address &address, Ptr<QuicSocketBase> socket)
       for (it = m_quicUdpBindingList.begin (); it != m_quicUdpBindingList.end (); ++it)
         {
           Ptr<QuicUdpBinding> item = *it;
-          if (item->m_quicSocket == socket and item->m_budpSocket6 == nullptr)
+          if (item->m_quicSocket == socket and !item->m_budpSocket6)
             {
               Ptr<Socket> udpSocket6 = CreateUdpSocket ();
               res = udpSocket6->Bind (address);
@@ -409,7 +409,7 @@ QuicL4Protocol::SetListener (Ptr<QuicSocketBase> sock)
 {
   NS_LOG_FUNCTION (this);
 
-  if (sock != nullptr and m_quicUdpBindingList.size () == 1)
+  if (sock and m_quicUdpBindingList.size () == 1)
     {
       m_isServer = true;
       m_quicUdpBindingList.front ()->m_quicSocket = sock;
@@ -489,7 +489,7 @@ QuicL4Protocol::ForwardUp (Ptr<Socket> sock)
             }
         }
 
-      NS_LOG_LOGIC ((socket == nullptr));
+      NS_LOG_LOGIC ((!socket));
       /*NS_LOG_INFO ("Initial " << header.IsInitial ());
       NS_LOG_INFO ("Handshake " << header.IsHandshake ());
       NS_LOG_INFO ("Short " << header.IsShort ());
@@ -497,7 +497,7 @@ QuicL4Protocol::ForwardUp (Ptr<Socket> sock)
       NS_LOG_INFO ("Retry " << header.IsRetry ());
       NS_LOG_INFO ("0Rtt " << header.IsORTT ());*/
 
-      if (header.IsInitial () and m_isServer and socket == nullptr)
+      if (header.IsInitial () and m_isServer and !socket)
         {
           NS_LOG_LOGIC (this << " Cloning listening socket " << m_quicUdpBindingList.front ()->m_quicSocket);
           socket = CloneSocket (m_quicUdpBindingList.front ()->m_quicSocket);
@@ -506,13 +506,13 @@ QuicL4Protocol::ForwardUp (Ptr<Socket> sock)
           socket->SetupCallback ();
 
         }
-      else if (header.IsHandshake () and m_isServer and socket != nullptr)
+      else if (header.IsHandshake () and m_isServer and socket)
         {
           NS_LOG_LOGIC ("CONNECTION AUTHENTICATED - Server authenticated Client " << InetSocketAddress::ConvertFrom (from).GetIpv4 () << " port " <<
                         InetSocketAddress::ConvertFrom (from).GetPort () << "");
           m_authAddresses.push_back (InetSocketAddress::ConvertFrom (from).GetIpv4 ()); //add to the list of authenticated sockets
         }
-      else if (header.IsHandshake () and !m_isServer and socket != nullptr)
+      else if (header.IsHandshake () and !m_isServer and socket)
         {
           NS_LOG_LOGIC ("CONNECTION AUTHENTICATED - Client authenticated Server " << InetSocketAddress::ConvertFrom (from).GetIpv4 () << " port " <<
                         InetSocketAddress::ConvertFrom (from).GetPort () << "");
@@ -559,7 +559,7 @@ QuicL4Protocol::ForwardUp (Ptr<Socket> sock)
         }
 
       // Handle callback for the correct socket
-      if (!m_socketHandlers[socket].IsNull ())
+      if (!m_socketHandlers[socket].IsNull())
         {
           NS_LOG_LOGIC (this << " waking up handler of socket " << socket);
           m_socketHandlers[socket] (packet, header, from);

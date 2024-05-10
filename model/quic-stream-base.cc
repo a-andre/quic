@@ -79,7 +79,7 @@ QuicStreamBase::GetInstanceTypeId () const
 }
 
 
-QuicStreamBase::QuicStreamBase (void) 
+QuicStreamBase::QuicStreamBase (void)
   : QuicStream (),
   m_streamType (NONE),
   m_streamDirectionType (UNKNOWN),
@@ -150,7 +150,8 @@ int
 QuicStreamBase::AppendingTx (Ptr<Packet> frame)
 {
   NS_LOG_FUNCTION (this);
-
+  if (frame->GetSize () > 0)
+  {
   if (!m_txBuffer->Add (frame))
     {
       NS_LOG_WARN ("Exceeding Stream Tx Buffer Size");
@@ -159,6 +160,12 @@ QuicStreamBase::AppendingTx (Ptr<Packet> frame)
       //m_errno = ERROR_MSGSIZE;
       return -1;
     }
+  }
+  else
+  {
+      NS_LOG_INFO("Empty frame!");
+      return -1;
+  }
   return frame->GetSize ();
 }
 
