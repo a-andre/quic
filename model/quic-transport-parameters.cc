@@ -54,7 +54,7 @@ QuicTransportParameters::~QuicTransportParameters ()
 }
 
 TypeId
-QuicTransportParameters::GetTypeId (void)
+QuicTransportParameters::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::QuicTransportParameters")
     .SetParent<Header> ()
@@ -65,13 +65,13 @@ QuicTransportParameters::GetTypeId (void)
 }
 
 TypeId
-QuicTransportParameters::GetInstanceTypeId (void) const
+QuicTransportParameters::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-QuicTransportParameters::GetSerializedSize (void) const
+QuicTransportParameters::GetSerializedSize () const
 {
   uint32_t serializesSize = CalculateHeaderLength ();
   NS_LOG_INFO ("Serialized Size " << serializesSize);

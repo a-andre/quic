@@ -68,7 +68,7 @@ QuicSocketRxItem::Print (std::ostream &os) const
 NS_OBJECT_ENSURE_REGISTERED (QuicSocketRxBuffer);
 
 TypeId
-QuicSocketRxBuffer::GetTypeId (void)
+QuicSocketRxBuffer::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::QuicSocketRxBuffer")
     .SetParent<Object> ()
@@ -172,19 +172,19 @@ QuicSocketRxBuffer::Extract (uint32_t maxSize)
 }
 
 uint32_t
-QuicSocketRxBuffer::Available (void) const
+QuicSocketRxBuffer::Available () const
 {
   return m_maxBuffer - m_recvSize;
 }
 
 uint32_t
-QuicSocketRxBuffer::GetMaxBufferSize (void) const
+QuicSocketRxBuffer::GetMaxBufferSize () const
 {
   return m_maxBuffer;
 }
 
 uint32_t
-QuicSocketRxBuffer::Size (void) const
+QuicSocketRxBuffer::Size () const
 {
   NS_LOG_FUNCTION (this);
 

@@ -54,14 +54,14 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Implements a method to create a QUIC-based socket and return a base class smart pointer to the socket
    *
    * \return smart pointer to Socket
    */
-  virtual Ptr<Socket> CreateSocket (void);
+  virtual Ptr<Socket> CreateSocket ();
 
   /**
    * \brief Set the associated QUIC L4 protocol.
@@ -71,7 +71,7 @@ public:
   void SetQuicL4 (Ptr<QuicL4Protocol> quic);
 
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
 private:
   Ptr<QuicL4Protocol> m_quicl4;                 //!< The associated QUIC L4 protocol

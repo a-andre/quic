@@ -41,7 +41,7 @@ namespace ns3 {
 
 NS_LOG_COMPONENT_DEFINE ("QuicSocketTxBuffer");
 
-TypeId QuicSocketTxItem::GetTypeId (void)
+TypeId QuicSocketTxItem::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::QuicSocketTxItem")
     .SetParent<Object>()
@@ -189,7 +189,7 @@ void QuicSocketTxItem::SplitItems (QuicSocketTxItem &t1, QuicSocketTxItem &t2,
 
 NS_OBJECT_ENSURE_REGISTERED (QuicSocketTxBuffer);
 
-TypeId QuicSocketTxBuffer::GetTypeId (void)
+TypeId QuicSocketTxBuffer::GetTypeId ()
 {
   static TypeId tid =
     TypeId ("ns3::QuicSocketTxBuffer").SetParent<Object>().SetGroupName (
@@ -210,7 +210,7 @@ QuicSocketTxBuffer::QuicSocketTxBuffer () :
   m_sentList = QuicTxPacketList ();
 }
 
-QuicSocketTxBuffer::~QuicSocketTxBuffer (void)
+QuicSocketTxBuffer::~QuicSocketTxBuffer ()
 {
   QuicTxPacketList::iterator it;
 
@@ -642,12 +642,12 @@ void QuicSocketTxBuffer::CleanSentList ()
     }
 }
 
-uint32_t QuicSocketTxBuffer::Available (void) const
+uint32_t QuicSocketTxBuffer::Available () const
 {
   return m_maxBuffer - m_streamZeroSize - m_scheduler->AppSize ();
 }
 
-uint32_t QuicSocketTxBuffer::GetMaxBufferSize (void) const
+uint32_t QuicSocketTxBuffer::GetMaxBufferSize () const
 {
   return m_maxBuffer;
 }
@@ -657,12 +657,12 @@ void QuicSocketTxBuffer::SetMaxBufferSize (uint32_t n)
   m_maxBuffer = n;
 }
 
-uint32_t QuicSocketTxBuffer::AppSize (void) const
+uint32_t QuicSocketTxBuffer::AppSize () const
 {
   return m_streamZeroSize + m_scheduler->AppSize ();
 }
 
-uint32_t QuicSocketTxBuffer::GetNumFrameStream0InBuffer (void) const
+uint32_t QuicSocketTxBuffer::GetNumFrameStream0InBuffer () const
 {
   return m_numFrameStream0InBuffer;
 }

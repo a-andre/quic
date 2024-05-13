@@ -46,9 +46,9 @@ public:
 
 private:
   virtual void
-  DoRun (void);
+  DoRun ();
   virtual void
-  DoTeardown (void);
+  DoTeardown ();
 
   /*
    * \brief Test the insertion of packets in the Socket RX buffer

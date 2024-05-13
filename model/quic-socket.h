@@ -70,11 +70,11 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
-  QuicSocket (void);
+  QuicSocket ();
   QuicSocket (const QuicSocket&);
-  virtual ~QuicSocket (void);
+  virtual ~QuicSocket ();
 
   /**
    * \brief Quic Socket types
@@ -144,7 +144,7 @@ private:
    * \brief Get the send buffer size.
    * \returns the buffer size (in bytes)
    */
-  //virtual uint32_t GetSndBufSize (void) const = 0;
+  //virtual uint32_t GetSndBufSize () const = 0;
 
   /**
    * \brief Set the receive buffer size.
@@ -156,7 +156,7 @@ private:
    * \brief Get the receive buffer size.
    * \returns the buffer size (in bytes)
    */
-  //virtual uint32_t GetRcvBufSize (void) const = 0;
+  //virtual uint32_t GetRcvBufSize () const = 0;
 
 
   //eventuali set e get di altri parametri interessanti

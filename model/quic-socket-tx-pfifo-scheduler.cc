@@ -40,7 +40,7 @@ NS_LOG_COMPONENT_DEFINE ("QuicSocketTxPFifoScheduler");
 
 NS_OBJECT_ENSURE_REGISTERED (QuicSocketTxPFifoScheduler);
 
-TypeId QuicSocketTxPFifoScheduler::GetTypeId (void)
+TypeId QuicSocketTxPFifoScheduler::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::QuicSocketTxPFifoScheduler")
     .SetParent<QuicSocketTxScheduler> ()
@@ -64,7 +64,7 @@ QuicSocketTxPFifoScheduler::QuicSocketTxPFifoScheduler (
     other.m_retxFirst)
 {}
 
-QuicSocketTxPFifoScheduler::~QuicSocketTxPFifoScheduler (void)
+QuicSocketTxPFifoScheduler::~QuicSocketTxPFifoScheduler ()
 {}
 
 void

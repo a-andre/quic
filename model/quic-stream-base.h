@@ -57,7 +57,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Get the instance TypeId
@@ -65,8 +65,8 @@ public:
    */
   virtual TypeId GetInstanceTypeId () const;
 
-  QuicStreamBase (void);
-  virtual ~QuicStreamBase (void);
+  QuicStreamBase ();
+  virtual ~QuicStreamBase ();
 
   /**
    * \brief Set the QUIC L5 object
@@ -123,7 +123,7 @@ public:
    *
    * \return nFrameSent the number of frames sent in the stream
    */
-  uint32_t SendPendingData (void);
+  uint32_t SendPendingData ();
 
   /**
    * \brief Send a data frame of size maxSize
@@ -167,7 +167,7 @@ public:
    * \brief Get the stream TX buffer size.
    * \returns the buffer size (in bytes)
    */
-  uint32_t GetStreamSndBufSize (void) const;
+  uint32_t GetStreamSndBufSize () const;
 
   /**
    * \brief Set the stream RX buffer size.
@@ -179,7 +179,7 @@ public:
    * \brief Get the stream RX buffer size.
    * \returns the buffer size (in bytes)
    */
-  uint32_t GetStreamRcvBufSize (void) const;
+  uint32_t GetStreamRcvBufSize () const;
 
   // Implementation of QuicStream virtuals
   std::string StreamDirectionTypeToString () const;
@@ -193,8 +193,8 @@ public:
   void SetNode (Ptr<Node> node);
   void SetConnectionId (uint64_t connId);
   void SetStreamId (uint64_t streamId);
-  uint64_t GetStreamId (void);
-  uint32_t GetStreamTxAvailable (void) const;
+  uint64_t GetStreamId ();
+  uint32_t GetStreamTxAvailable () const;
 
 protected:
   QuicStreamTypes_t m_streamType;                    //!< The stream type

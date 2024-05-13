@@ -33,7 +33,7 @@ NS_LOG_COMPONENT_DEFINE ("QuicSocketFactory");
 
 NS_OBJECT_ENSURE_REGISTERED (QuicSocketFactory);
 
-TypeId QuicSocketFactory::GetTypeId (void)
+TypeId QuicSocketFactory::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::QuicSocketFactory")
     .SetParent<SocketFactory> ()
@@ -63,14 +63,14 @@ QuicSocketFactory::SetQuicL4 (Ptr<QuicL4Protocol> quic)
 }
 
 Ptr<Socket>
-QuicSocketFactory::CreateSocket (void)
+QuicSocketFactory::CreateSocket ()
 {
   NS_LOG_INFO ("QuicSocketFactory -- creating socket");
   return m_quicl4->CreateSocket ();
 }
 
 void
-QuicSocketFactory::DoDispose (void)
+QuicSocketFactory::DoDispose ()
 {
   m_quicl4 = 0;
   SocketFactory::DoDispose ();

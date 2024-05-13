@@ -82,7 +82,7 @@ QuicStreamTxItem::Print (std::ostream &os) const
 NS_OBJECT_ENSURE_REGISTERED (QuicStreamTxBuffer);
 
 TypeId
-QuicStreamTxBuffer::GetTypeId (void)
+QuicStreamTxBuffer::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::QuicStreamTxBuffer")
     .SetParent<Object> ()
@@ -105,7 +105,7 @@ QuicStreamTxBuffer::QuicStreamTxBuffer ()
   m_sentList = QuicTxPacketList ();
 }
 
-QuicStreamTxBuffer::~QuicStreamTxBuffer (void)
+QuicStreamTxBuffer::~QuicStreamTxBuffer ()
 {}
 
 void
@@ -389,13 +389,13 @@ QuicStreamTxBuffer::SplitItems (QuicStreamTxItem &t1, QuicStreamTxItem &t2, uint
 
 
 uint32_t
-QuicStreamTxBuffer::Available (void) const
+QuicStreamTxBuffer::Available () const
 {
   return m_maxBuffer - m_appSize;
 }
 
 uint32_t
-QuicStreamTxBuffer::GetMaxBufferSize (void) const
+QuicStreamTxBuffer::GetMaxBufferSize () const
 {
   return m_maxBuffer;
 }
@@ -407,7 +407,7 @@ QuicStreamTxBuffer::SetMaxBufferSize (uint32_t n)
 }
 
 uint32_t
-QuicStreamTxBuffer::AppSize (void) const
+QuicStreamTxBuffer::AppSize () const
 {
   return m_appSize;
 }

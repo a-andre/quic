@@ -43,7 +43,7 @@ NS_OBJECT_ENSURE_REGISTERED (QuicSocketTxScheduler);
 NS_OBJECT_ENSURE_REGISTERED (QuicSocketTxScheduleItem);
 
 TypeId
-QuicSocketTxScheduleItem::GetTypeId (void)
+QuicSocketTxScheduleItem::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::QuicSocketTxScheduleItem")
     .SetParent<Object> ()
@@ -123,7 +123,7 @@ QuicSocketTxScheduleItem::SetPriority (double priority)
 
 
 TypeId
-QuicSocketTxScheduler::GetTypeId (void)
+QuicSocketTxScheduler::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::QuicSocketTxScheduler")
     .SetParent<Object> ()
@@ -143,7 +143,7 @@ QuicSocketTxScheduler::QuicSocketTxScheduler (const QuicSocketTxScheduler &other
   m_appList = other.m_appList;
 }
 
-QuicSocketTxScheduler::~QuicSocketTxScheduler (void)
+QuicSocketTxScheduler::~QuicSocketTxScheduler ()
 {
   m_appList = QuicTxPacketList ();
   m_appSize = 0;
@@ -317,7 +317,7 @@ QuicSocketTxScheduler::GetNewSegment (uint32_t numBytes)
 }
 
 uint32_t
-QuicSocketTxScheduler::AppSize (void) const
+QuicSocketTxScheduler::AppSize () const
 {
   return m_appSize;
 }

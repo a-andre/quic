@@ -63,11 +63,11 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   QuicSocketState ();
   QuicSocketState (const QuicSocketState &other);
-  virtual  ~QuicSocketState (void)
+  virtual  ~QuicSocketState ()
   {}
 
   // Loss Detection variables of interest
@@ -177,7 +177,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * \brief Get the instance TypeId
@@ -189,10 +189,10 @@ public:
    * \brief Build an object. InitializeScheduling() must be called after construction to instantiate the frame scheduler, or the construction will fail
    *
    */
-  QuicSocketBase (void);
+  QuicSocketBase ();
   QuicSocketBase (const QuicSocketBase&);
 
-  virtual ~QuicSocketBase (void);
+  virtual ~QuicSocketBase ();
 
   /**
    * \brief Install a congestion control algorithm on this socket
@@ -206,7 +206,7 @@ public:
    *
    * \returns 0 on success, -1 on failure
    */
-  int SetupCallback (void);
+  int SetupCallback ();
 
   /**
    * \brief Send the initial handshake command to the other endpoint
@@ -299,7 +299,7 @@ public:
    *
    * \return the connection ID
    */
-  uint64_t GetConnectionId (void) const;
+  uint64_t GetConnectionId () const;
 
   /**
    * \brief Set the Quic protocol version
@@ -433,7 +433,7 @@ public:
    é
    * \returns the buffer size (in bytes)
    */
-  uint32_t GetSocketSndBufSize (void) const;
+  uint32_t GetSocketSndBufSize () const;
 
   /**
    * \brief Set the socket RX buffer size.
@@ -447,7 +447,7 @@ public:
    *
    * \returns the buffer size (in bytes)
    */
-  uint32_t GetSocketRcvBufSize (void) const;
+  uint32_t GetSocketRcvBufSize () const;
 
   /**
    * \brief Schedule a queue ACK has if needed
@@ -507,7 +507,7 @@ public:
    *
    * \returns the Slow Start Threshold (in bytes)
    */
-  uint32_t GetInitialSSThresh (void) const;
+  uint32_t GetInitialSSThresh () const;
 
   /**
    * \brief Set the size of initial packet of the handshake
@@ -522,7 +522,7 @@ public:
    *
    * \returns the size (in bytes)
    */
-  uint32_t GetInitialPacketSize (void) const;
+  uint32_t GetInitialPacketSize () const;
 
   // Implementation of ns3::Socket virtuals
 
@@ -543,25 +543,25 @@ public:
   virtual int SendTo (Ptr<Packet> p, uint32_t flags, const Address &toAddress);
   virtual Ptr<Packet> Recv (uint32_t maxSize, uint32_t flags);
   virtual Ptr<Packet> RecvFrom (uint32_t maxSize, uint32_t flags, Address &fromAddress);
-  virtual int Bind (void);  // Bind a socket by setting up the UDP socket in QuicL4Protocol
+  virtual int Bind ();  // Bind a socket by setting up the UDP socket in QuicL4Protocol
   virtual int Bind (const Address &address);
-  virtual int Bind6 (void);
+  virtual int Bind6 ();
   virtual void BindToNetDevice (Ptr<NetDevice> netdevice);
   virtual void SetSegSize (uint32_t size);
-  virtual uint32_t GetSegSize (void) const;
-  virtual int Listen (void);
+  virtual uint32_t GetSegSize () const;
+  virtual int Listen ();
   virtual int Connect (const Address &address);  // Setup endpoint and create the QUIC L5 protocol
-  virtual int Close (void);
-  virtual int ShutdownSend (void);
-  virtual int ShutdownRecv (void);
+  virtual int Close ();
+  virtual int ShutdownSend ();
+  virtual int ShutdownRecv ();
   virtual void SetNode (Ptr<Node> node);
-  virtual Ptr<Node> GetNode (void) const;
+  virtual Ptr<Node> GetNode () const;
   virtual int GetSockName (Address &address) const;
   virtual int GetPeerName (Address &address) const;
-  virtual uint32_t GetTxAvailable (void) const;
-  virtual uint32_t GetRxAvailable (void) const;
-  virtual enum SocketErrno GetErrno (void) const;
-  virtual enum SocketType GetSocketType (void) const;
+  virtual uint32_t GetTxAvailable () const;
+  virtual uint32_t GetRxAvailable () const;
+  virtual enum SocketErrno GetErrno () const;
+  virtual enum SocketType GetSocketType () const;
 
   /**
    * Set the latency bound for a specified stream
@@ -607,7 +607,7 @@ public:
 protected:
   // Implementation of QuicSocket virtuals
   virtual bool SetAllowBroadcast (bool allowBroadcast);
-  virtual bool GetAllowBroadcast (void) const;
+  virtual bool GetAllowBroadcast () const;
 
   /**
    * \brief Creates a Quic L5 Protocol
@@ -669,21 +669,21 @@ protected:
    *
    * \return 0 on success
    */
-  int DoConnect (void);
+  int DoConnect ();
 
   /**
    * \brief Perform the real connection tasks: start the initial 0-RTT handshake
    *
    * \return 0 on success
    */
-  int DoFastConnect (void);
+  int DoFastConnect ();
 
   /**
    * \brief Set the socket to IDLE, nullify the callbacks and remove this socket from the QuicL4Protocol
    *
    * \return 1 on success
    */
-  int DoClose (void);
+  int DoClose ();
 
   /**
    * \brief receive a QUIC packet
@@ -724,12 +724,12 @@ protected:
   /**
    * \brief Call Socket::NotifyConnectionSucceeded()
    */
-  void ConnectionSucceeded (void);
+  void ConnectionSucceeded ();
 
   /**
    * \brief Notify Pacing
    */
-  void NotifyPacingPerformed (void);
+  void NotifyPacingPerformed ();
   /**
    * Send the connection close packet and schedule
    * the DoClose method

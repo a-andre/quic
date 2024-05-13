@@ -91,7 +91,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   QuicSocketRxBuffer ();
   virtual ~QuicSocketRxBuffer ();
@@ -109,14 +109,14 @@ public:
    *
    * \return the buffer occupancy in bytes
    */
-  uint32_t Size (void) const;
+  uint32_t Size () const;
 
   /**
    * Get the maximum buffer size
    *
    * \return the buffer size
    */
-  uint32_t GetMaxBufferSize (void) const;
+  uint32_t GetMaxBufferSize () const;
 
   /**
    * Set the maximum buffer size

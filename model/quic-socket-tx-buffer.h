@@ -68,7 +68,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   QuicSocketTxItem ();
   QuicSocketTxItem (const QuicSocketTxItem &other);
@@ -126,10 +126,10 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   QuicSocketTxBuffer ();
-  virtual ~QuicSocketTxBuffer (void);
+  virtual ~QuicSocketTxBuffer ();
 
   /**
    * Print the buffer information to a string,
@@ -188,7 +188,7 @@ public:
    *
    * \return the maximum buffer size in bytes
    */
-  uint32_t GetMaxBufferSize (void) const;
+  uint32_t GetMaxBufferSize () const;
 
   /**
    * Set the max size of the buffer
@@ -216,14 +216,14 @@ public:
    *
    * \return the available space in the buffer
    */
-  uint32_t Available (void) const;
+  uint32_t Available () const;
 
   /**
    * Returns the total number of bytes in the application buffer
    *
    * \return the total number of bytes in the application buffer
    */
-  uint32_t AppSize (void) const;
+  uint32_t AppSize () const;
 
   /**
    * \brief Return total bytes in flight
@@ -237,7 +237,7 @@ public:
    *
    * \return the number of frames for stream 0 is in the buffer
    */
-  uint32_t GetNumFrameStream0InBuffer (void) const;
+  uint32_t GetNumFrameStream0InBuffer () const;
 
   /**
    * Return the next frame for stream 0 to be sent

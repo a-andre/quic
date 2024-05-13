@@ -50,9 +50,9 @@ public:
 
 private:
   virtual void
-  DoRun (void);
+  DoRun ();
   virtual void
-  DoTeardown (void);
+  DoTeardown ();
 
   /** \brief Test the generation of an unsent block */
   void

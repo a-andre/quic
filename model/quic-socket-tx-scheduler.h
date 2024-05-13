@@ -44,7 +44,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   QuicSocketTxScheduleItem (uint64_t id, uint64_t off, double p, Ptr<QuicSocketTxItem> it);
   QuicSocketTxScheduleItem (const QuicSocketTxScheduleItem &other);
@@ -131,13 +131,13 @@ public:
 
   QuicSocketTxScheduler ();
   QuicSocketTxScheduler (const QuicSocketTxScheduler &other);
-  virtual ~QuicSocketTxScheduler (void);
+  virtual ~QuicSocketTxScheduler ();
 
   /**
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   /**
    * Add a tx item to the scheduling list (default behavior: FIFO scheduling)
@@ -160,7 +160,7 @@ public:
    *
    * \return the total number of bytes in the application buffer
    */
-  uint32_t AppSize (void) const;
+  uint32_t AppSize () const;
   /**
    * Add a schedule tx item to the scheduling list
    *

@@ -36,7 +36,7 @@ NS_OBJECT_ENSURE_REGISTERED (QuicBbr);
 const double QuicBbr::PACING_GAIN_CYCLE [] = {5.0 / 4, 3.0 / 4, 1, 1, 1, 1, 1, 1};
 
 TypeId
-QuicBbr::GetTypeId (void)
+QuicBbr::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::QuicBbr")
     .SetParent<QuicCongestionOps> ()
@@ -813,7 +813,7 @@ QuicBbr::OnRetransmissionTimeoutVerified (Ptr<TcpSocketState> tcb)
 }
 
 Ptr<TcpCongestionOps>
-QuicBbr::Fork (void)
+QuicBbr::Fork ()
 {
   return CopyObject<QuicBbr> (this);
 }

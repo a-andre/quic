@@ -69,7 +69,7 @@ QuicStreamRxItem::Print (std::ostream &os) const
 NS_OBJECT_ENSURE_REGISTERED (QuicStreamRxBuffer);
 
 TypeId
-QuicStreamRxBuffer::GetTypeId (void)
+QuicStreamRxBuffer::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::QuicStreamRxBuffer")
     .SetParent<Object> ()
@@ -240,7 +240,7 @@ QuicStreamRxBuffer::GetDeliverable (uint64_t currRecvOffset)
 }
 
 uint32_t
-QuicStreamRxBuffer::Size (void) const
+QuicStreamRxBuffer::Size () const
 {
   NS_LOG_FUNCTION (this);
 
@@ -254,13 +254,13 @@ QuicStreamRxBuffer::Size (void) const
 }
 
 uint32_t
-QuicStreamRxBuffer::Available (void) const
+QuicStreamRxBuffer::Available () const
 {
   return m_maxBuffer - m_numBytesInBuffer;
 }
 
 uint32_t
-QuicStreamRxBuffer::GetMaxBufferSize (void) const
+QuicStreamRxBuffer::GetMaxBufferSize () const
 {
   return m_maxBuffer;
 }

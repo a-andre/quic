@@ -40,7 +40,7 @@ NS_LOG_COMPONENT_DEFINE ("QuicClient");
 NS_OBJECT_ENSURE_REGISTERED (QuicClient);
 
 TypeId
-QuicClient::GetTypeId (void)
+QuicClient::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::QuicClient")
     .SetParent<Application> ()
@@ -108,14 +108,14 @@ QuicClient::SetRemote (Address addr)
 }
 
 void
-QuicClient::DoDispose (void)
+QuicClient::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   Application::DoDispose ();
 }
 
 void
-QuicClient::StartApplication (void)
+QuicClient::StartApplication ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -167,7 +167,7 @@ QuicClient::StartApplication (void)
 }
 
 void
-QuicClient::StopApplication (void)
+QuicClient::StopApplication ()
 {
   NS_LOG_FUNCTION (this);
   Simulator::Cancel (m_sendEvent);
@@ -179,7 +179,7 @@ QuicClient::StopApplication (void)
 }
 
 void
-QuicClient::Send (void)
+QuicClient::Send ()
 {
   NS_LOG_FUNCTION (this);
   NS_ASSERT (m_sendEvent.IsExpired ());

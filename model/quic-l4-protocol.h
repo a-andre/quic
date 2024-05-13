@@ -54,8 +54,8 @@ public:
   QuicUdpBinding ();
   ~QuicUdpBinding ();
 
-  static TypeId GetTypeId (void);
-  TypeId GetInstanceTypeId (void) const;
+  static TypeId GetTypeId ();
+  TypeId GetInstanceTypeId () const;
 
   Ptr<Socket> m_budpSocket;          //!< The UDP socket this binding is associated with
   Ptr<Socket> m_budpSocket6;         //!< The IPv6 UDP this binding is associated with
@@ -93,7 +93,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
   static const uint8_t PROT_NUMBER;
 
   QuicL4Protocol ();
@@ -112,7 +112,7 @@ public:
    * \return A smart Socket pointer to a QuicSocket (e.g., QuicSocketBase)
    * allocated by this instance of the QUIC L4 protocol
    */
-  Ptr<Socket> CreateSocket (void);
+  Ptr<Socket> CreateSocket ();
 
   /**
    * \brief Create a QUIC socket using the specified congestion control algorithm TypeId
@@ -129,14 +129,14 @@ public:
    *
    * \return a smart pointer to the UDP socket
    */
-  Ptr<Socket> CreateUdpSocket (void);
+  Ptr<Socket> CreateUdpSocket ();
 
   /**
    * \brief Create an IPv6 UDP socket that will be used by QUIC
    *
    * \return a smart pointer to the IPv6 UDP socket
    */
-  Ptr<Socket> CreateUdpSocket6 (void);
+  Ptr<Socket> CreateUdpSocket6 ();
 
   /**
    * \brief Bind the UDP socket (and create it if needed)
@@ -289,7 +289,7 @@ public:
    *
    * \return true if this L4 Protocol is Server, otherwhise false
    */
-  bool IsServer (void) const;
+  bool IsServer () const;
 
   /**
    * \brief Check if this L4 Protocol allows the 0-Rtt Handshake start
@@ -302,7 +302,7 @@ public:
    * \brief Allocate an IPv4 Endpoint
    * \return the Endpoint
    */
-  Ipv4EndPoint * Allocate (void);
+  Ipv4EndPoint * Allocate ();
   /**
    * \brief Allocate an IPv4 Endpoint
    * \param address address to use
@@ -341,7 +341,7 @@ public:
    * \brief Allocate an IPv6 Endpoint
    * \return the Endpoint
    */
-  Ipv6EndPoint * Allocate6 (void);
+  Ipv6EndPoint * Allocate6 ();
   /**
    * \brief Allocate an IPv6 Endpoint
    * \param address address to use
@@ -404,12 +404,12 @@ public:
                             const uint8_t payload[8]);
   virtual void SetDownTarget (IpL4Protocol::DownTargetCallback cb);
   virtual void SetDownTarget6 (IpL4Protocol::DownTargetCallback6 cb);
-  virtual int GetProtocolNumber (void) const;
-  virtual IpL4Protocol::DownTargetCallback GetDownTarget (void) const;
-  virtual IpL4Protocol::DownTargetCallback6 GetDownTarget6 (void) const;
+  virtual int GetProtocolNumber () const;
+  virtual IpL4Protocol::DownTargetCallback GetDownTarget () const;
+  virtual IpL4Protocol::DownTargetCallback6 GetDownTarget6 () const;
 
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
   /**
    * \brief Setup socket factory and callbacks when aggregated to a node

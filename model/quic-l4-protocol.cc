@@ -83,7 +83,7 @@ QuicUdpBinding::~QuicUdpBinding ()
 }
 
 TypeId
-QuicUdpBinding::GetTypeId (void)
+QuicUdpBinding::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::QuicUdpBinding")
     .SetParent<Object> ()
@@ -99,7 +99,7 @@ QuicUdpBinding::GetTypeId (void)
 }
 
 TypeId
-QuicUdpBinding::GetInstanceTypeId (void) const
+QuicUdpBinding::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -114,7 +114,7 @@ QuicUdpBinding::GetInstanceTypeId (void) const
 const uint8_t QuicL4Protocol::PROT_NUMBER = 143;
 
 TypeId
-QuicL4Protocol::GetTypeId (void)
+QuicL4Protocol::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::QuicL4Protocol")
     .SetParent<IpL4Protocol> ()
@@ -421,7 +421,7 @@ QuicL4Protocol::SetListener (Ptr<QuicSocketBase> sock)
 }
 
 bool
-QuicL4Protocol::IsServer (void)  const
+QuicL4Protocol::IsServer ()  const
 {
   return m_isServer;
 }
@@ -619,13 +619,13 @@ QuicL4Protocol::NotifyNewAggregate ()
 }
 
 int
-QuicL4Protocol::GetProtocolNumber (void) const
+QuicL4Protocol::GetProtocolNumber () const
 {
   return PROT_NUMBER;
 }
 
 void
-QuicL4Protocol::DoDispose (void)
+QuicL4Protocol::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   m_quicUdpBindingList.clear ();
@@ -852,7 +852,7 @@ QuicL4Protocol::RemoveSocket (Ptr<QuicSocketBase> socket)
 }
 
 Ipv4EndPoint *
-QuicL4Protocol::Allocate (void)
+QuicL4Protocol::Allocate ()
 {
   NS_LOG_FUNCTION (this);
   return m_endPoints->Allocate ();
@@ -891,7 +891,7 @@ QuicL4Protocol::Allocate (Ptr<NetDevice> boundNetDevice,
 }
 
 Ipv6EndPoint *
-QuicL4Protocol::Allocate6 (void)
+QuicL4Protocol::Allocate6 ()
 {
   NS_LOG_FUNCTION (this);
   return m_endPoints6->Allocate ();
@@ -951,7 +951,7 @@ QuicL4Protocol::SetDownTarget (IpL4Protocol::DownTargetCallback callback)
 }
 
 IpL4Protocol::DownTargetCallback
-QuicL4Protocol::GetDownTarget (void) const
+QuicL4Protocol::GetDownTarget () const
 {
   NS_LOG_FUNCTION (this);
   return m_downTarget;
@@ -965,7 +965,7 @@ QuicL4Protocol::SetDownTarget6 (IpL4Protocol::DownTargetCallback6 callback)
 }
 
 IpL4Protocol::DownTargetCallback6
-QuicL4Protocol::GetDownTarget6 (void) const
+QuicL4Protocol::GetDownTarget6 () const
 {
   return m_downTarget6;
 }

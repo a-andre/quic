@@ -74,10 +74,10 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   QuicStreamTxBuffer ();
-  virtual ~QuicStreamTxBuffer (void);
+  virtual ~QuicStreamTxBuffer ();
 
   /**
    * Print the buffer information to a string,
@@ -138,7 +138,7 @@ public:
    *
    * \return the maximum buffer size in bytes
    */
-  uint32_t GetMaxBufferSize (void) const;
+  uint32_t GetMaxBufferSize () const;
 
   /**
    * Set the max size of the buffer
@@ -152,14 +152,14 @@ public:
    *
    * \return the available space in the buffer
    */
-  uint32_t Available (void) const;
+  uint32_t Available () const;
 
   /**
    * Returns the total number of bytes in the application buffer
    *
    * \return the total number of bytes in the application buffer
    */
-  uint32_t AppSize (void) const;
+  uint32_t AppSize () const;
 
   /**
    * \brief Return total bytes in flight

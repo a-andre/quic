@@ -46,7 +46,7 @@ QuicSocket::QuicStateName[QuicSocket::LAST_STATE] = {
 };
 
 TypeId
-QuicSocket::GetTypeId (void)
+QuicSocket::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::QuicSocket")
     .SetParent<Socket> ()

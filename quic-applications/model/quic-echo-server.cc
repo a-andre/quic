@@ -41,7 +41,7 @@ NS_LOG_COMPONENT_DEFINE ("QuicEchoServerApplication");
 NS_OBJECT_ENSURE_REGISTERED (QuicEchoServer);
 
 TypeId
-QuicEchoServer::GetTypeId (void)
+QuicEchoServer::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::QuicEchoServer")
     .SetParent<Application> ()
@@ -74,14 +74,14 @@ QuicEchoServer::~QuicEchoServer ()
 }
 
 void
-QuicEchoServer::DoDispose (void)
+QuicEchoServer::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   Application::DoDispose ();
 }
 
 void
-QuicEchoServer::StartApplication (void)
+QuicEchoServer::StartApplication ()
 {
   NS_LOG_INFO ("##########  QUIC Echo Server START at time " << Simulator::Now ().GetSeconds () << " ##########");
   NS_LOG_FUNCTION (this);
@@ -232,7 +232,7 @@ QuicEchoServer::SetStreamId (uint32_t streamId)
 }
 
 uint32_t
-QuicEchoServer::GetStreamId (void) const
+QuicEchoServer::GetStreamId () const
 {
   return m_streamId;
 }

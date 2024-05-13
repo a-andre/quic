@@ -48,10 +48,10 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
-  QuicStream (void);
-  virtual ~QuicStream (void);
+  QuicStream ();
+  virtual ~QuicStream ();
 
   /**
    * \brief Quic Stream types, which are represented by the 2 lsb of stream Id
@@ -184,14 +184,14 @@ public:
    *
    * \return the stream ID
    */
-  virtual uint64_t GetStreamId (void) = 0;
+  virtual uint64_t GetStreamId () = 0;
 
   /**
    * \brief Get available space left in the TX buffer
    *
    * \return the available space left in the TX buffer
    */
-  virtual uint32_t GetStreamTxAvailable (void) const = 0;
+  virtual uint32_t GetStreamTxAvailable () const = 0;
 
 };
 

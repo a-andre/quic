@@ -42,7 +42,7 @@ NS_LOG_COMPONENT_DEFINE ("QuicCongestionControl");
 NS_OBJECT_ENSURE_REGISTERED (QuicCongestionOps);
 
 TypeId
-QuicCongestionOps::GetTypeId (void)
+QuicCongestionOps::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::QuicCongestionControl")
     .SetParent<TcpNewReno> ()
@@ -52,7 +52,7 @@ QuicCongestionOps::GetTypeId (void)
   return tid;
 }
 
-QuicCongestionOps::QuicCongestionOps (void)
+QuicCongestionOps::QuicCongestionOps ()
   : TcpNewReno ()
 {
   NS_LOG_FUNCTION (this);
@@ -65,7 +65,7 @@ QuicCongestionOps::QuicCongestionOps (
   NS_LOG_FUNCTION (this);
 }
 
-QuicCongestionOps::~QuicCongestionOps (void)
+QuicCongestionOps::~QuicCongestionOps ()
 {}
 
 std::string

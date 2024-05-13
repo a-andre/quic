@@ -65,9 +65,9 @@ public:
 
 private:
   virtual void
-  DoRun (void);
+  DoRun ();
   virtual void
-  DoTeardown (void);
+  DoTeardown ();
 
   /**
    * \brief Check the correct header serialization/deserialization.
@@ -90,9 +90,9 @@ public:
 
 private:
   virtual void
-  DoRun (void);
+  DoRun ();
   virtual void
-  DoTeardown (void);
+  DoTeardown ();
 
   /**
    * \brief Check the correct subheader serialization/deserialization.

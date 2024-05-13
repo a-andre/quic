@@ -47,7 +47,7 @@ NS_LOG_COMPONENT_DEFINE ("QuicStreamBase");
 NS_OBJECT_ENSURE_REGISTERED (QuicStreamBase);
 
 TypeId
-QuicStreamBase::GetTypeId (void)
+QuicStreamBase::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::QuicStreamBase")
     .SetParent<QuicStream> ()
@@ -79,7 +79,7 @@ QuicStreamBase::GetInstanceTypeId () const
 }
 
 
-QuicStreamBase::QuicStreamBase (void)
+QuicStreamBase::QuicStreamBase ()
   : QuicStream (),
   m_streamType (NONE),
   m_streamDirectionType (UNKNOWN),
@@ -100,7 +100,7 @@ QuicStreamBase::QuicStreamBase (void)
   m_txBuffer = CreateObject<QuicStreamTxBuffer> ();
 }
 
-QuicStreamBase::~QuicStreamBase (void)
+QuicStreamBase::~QuicStreamBase ()
 {
   NS_LOG_FUNCTION (this);
 }
@@ -177,7 +177,7 @@ QuicStreamBase::GetStreamTxAvailable () const
 
 
 uint32_t
-QuicStreamBase::SendPendingData (void)
+QuicStreamBase::SendPendingData ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -693,7 +693,7 @@ QuicStreamBase::SetStreamId (uint64_t streamId)
 }
 
 uint64_t
-QuicStreamBase::GetStreamId (void)
+QuicStreamBase::GetStreamId ()
 {
   return m_streamId;
 }
@@ -731,7 +731,7 @@ QuicStreamBase::SetStreamSndBufSize (uint32_t size)
 }
 
 uint32_t
-QuicStreamBase::GetStreamSndBufSize (void) const
+QuicStreamBase::GetStreamSndBufSize () const
 {
   return m_txBuffer->GetMaxBufferSize ();
 }
@@ -745,7 +745,7 @@ QuicStreamBase::SetStreamRcvBufSize (uint32_t size)
 }
 
 uint32_t
-QuicStreamBase::GetStreamRcvBufSize (void) const
+QuicStreamBase::GetStreamRcvBufSize () const
 {
   return m_rxBuffer->GetMaxBufferSize ();
 }

@@ -82,7 +82,7 @@ QuicHeader::TypeToString () const
 }
 
 TypeId
-QuicHeader::GetTypeId (void)
+QuicHeader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::QuicHeader")
     .SetParent<Header> ()
@@ -93,13 +93,13 @@ QuicHeader::GetTypeId (void)
 }
 
 TypeId
-QuicHeader::GetInstanceTypeId (void) const
+QuicHeader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
 
 uint32_t
-QuicHeader::GetSerializedSize (void) const
+QuicHeader::GetSerializedSize () const
 {
   NS_ASSERT (m_type != NONE or m_form == SHORT);
 

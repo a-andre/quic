@@ -43,7 +43,7 @@ NS_OBJECT_ENSURE_REGISTERED (QuicServer);
 
 
 TypeId
-QuicServer::GetTypeId (void)
+QuicServer::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::QuicServer")
     .SetParent<Application> ()
@@ -96,28 +96,28 @@ QuicServer::SetPacketWindowSize (uint16_t size)
 }
 
 uint32_t
-QuicServer::GetLost (void) const
+QuicServer::GetLost () const
 {
   NS_LOG_FUNCTION (this);
   return m_lossCounter.GetLost ();
 }
 
 uint64_t
-QuicServer::GetReceived (void) const
+QuicServer::GetReceived () const
 {
   NS_LOG_FUNCTION (this);
   return m_received;
 }
 
 void
-QuicServer::DoDispose (void)
+QuicServer::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   Application::DoDispose ();
 }
 
 void
-QuicServer::StartApplication (void)
+QuicServer::StartApplication ()
 {
   NS_LOG_FUNCTION (this);
 

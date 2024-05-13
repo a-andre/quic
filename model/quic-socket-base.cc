@@ -85,7 +85,7 @@ QuicSocketBase::GetInstanceTypeId () const
 }
 
 TypeId
-QuicSocketBase::GetTypeId (void)
+QuicSocketBase::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::QuicSocketBase")
     .SetParent<QuicSocket> ()
@@ -294,7 +294,7 @@ QuicSocketBase::GetTypeId (void)
 }
 
 TypeId
-QuicSocketState::GetTypeId (void)
+QuicSocketState::GetTypeId ()
 {
   static TypeId tid =
     TypeId ("ns3::QuicSocketState")
@@ -433,7 +433,7 @@ QuicSocketState::QuicSocketState (const QuicSocketState &other)
   m_lossDetectionAlarm.Cancel ();
 }
 
-QuicSocketBase::QuicSocketBase (void)
+QuicSocketBase::QuicSocketBase ()
   : QuicSocket (),
     m_endPoint (0),
     m_endPoint6 (0),
@@ -613,7 +613,7 @@ QuicSocketBase::QuicSocketBase (const QuicSocketBase& sock)   // Copy constructo
     }
 }
 
-QuicSocketBase::~QuicSocketBase (void)
+QuicSocketBase::~QuicSocketBase ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -639,7 +639,7 @@ QuicSocketBase::~QuicSocketBase (void)
 
 /* Inherit from Socket class: Bind socket to an end-point in QuicL4Protocol */
 int
-QuicSocketBase::Bind (void)
+QuicSocketBase::Bind ()
 {
   //NS_LOG_FUNCTION (this);
   m_endPoint = m_quicl4->Allocate ();
@@ -723,7 +723,7 @@ QuicSocketBase::Bind (const Address &address)
 }
 
 int
-QuicSocketBase::Bind6 (void)
+QuicSocketBase::Bind6 ()
 {
   NS_LOG_FUNCTION (this);
   m_endPoint6 = m_quicl4->Allocate6 ();
@@ -747,7 +747,7 @@ QuicSocketBase::BindToNetDevice (Ptr<NetDevice> netdevice)
 }
 
 int
-QuicSocketBase::Listen (void)
+QuicSocketBase::Listen ()
 {
   NS_LOG_FUNCTION (this);
   if (m_socketType == NONE)
@@ -1120,7 +1120,7 @@ QuicSocketBase::SetSegSize (uint32_t size)
 }
 
 uint32_t
-QuicSocketBase::GetSegSize (void) const
+QuicSocketBase::GetSegSize () const
 {
   return m_tcb->m_segmentSize;
 }
@@ -1691,7 +1691,7 @@ QuicSocketBase::ScheduleCloseAndSendConnectionClosePacket ()
 
 
 int
-QuicSocketBase::Close (void)
+QuicSocketBase::Close ()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_INFO (this << " Close at time " << Simulator::Now ().GetSeconds ());
@@ -1766,7 +1766,7 @@ QuicSocketBase::SendConnectionClosePacket (uint16_t errorCode, std::string phras
 
 /* Inherit from Socket class: Signal a termination of send */
 int
-QuicSocketBase::ShutdownSend (void)
+QuicSocketBase::ShutdownSend ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -1777,7 +1777,7 @@ QuicSocketBase::ShutdownSend (void)
 
 /* Inherit from Socket class: Signal a termination of receive */
 int
-QuicSocketBase::ShutdownRecv (void)
+QuicSocketBase::ShutdownRecv ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -1793,7 +1793,7 @@ QuicSocketBase::SetNode (Ptr<Node> node)
 }
 
 Ptr<Node>
-QuicSocketBase::GetNode (void) const
+QuicSocketBase::GetNode () const
 {
 //NS_LOG_FUNCTION_NOARGS ();
 
@@ -1819,7 +1819,7 @@ QuicSocketBase::GetPeerName (Address &address) const
 
 /* Inherit from Socket class: Get the max number of bytes an app can send */
 uint32_t
-QuicSocketBase::GetTxAvailable (void) const
+QuicSocketBase::GetTxAvailable () const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1828,7 +1828,7 @@ QuicSocketBase::GetTxAvailable (void) const
 
 /* Inherit from Socket class: Get the max number of bytes an app can read */
 uint32_t
-QuicSocketBase::GetRxAvailable (void) const
+QuicSocketBase::GetRxAvailable () const
 {
   NS_LOG_FUNCTION (this);
 
@@ -1837,14 +1837,14 @@ QuicSocketBase::GetRxAvailable (void) const
 
 /* Inherit from Socket class: Returns error code */
 enum Socket::SocketErrno
-QuicSocketBase::GetErrno (void) const
+QuicSocketBase::GetErrno () const
 {
   return m_errno;
 }
 
 /* Inherit from Socket class: Returns socket type, NS3_SOCK_STREAM */
 enum Socket::SocketType
-QuicSocketBase::GetSocketType (void) const
+QuicSocketBase::GetSocketType () const
 {
   return NS3_SOCK_STREAM;
 }
@@ -1853,7 +1853,7 @@ QuicSocketBase::GetSocketType (void) const
 
 /* Clean up after Bind. Set up callback functions in the end-point. */
 int
-QuicSocketBase::SetupCallback (void)
+QuicSocketBase::SetupCallback ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -1918,7 +1918,7 @@ QuicSocketBase::InitializeScheduling ()
 }
 
 uint64_t
-QuicSocketBase::GetConnectionId (void) const
+QuicSocketBase::GetConnectionId () const
 {
   NS_LOG_FUNCTION_NOARGS ();
 
@@ -1945,7 +1945,7 @@ QuicSocketBase::SetAllowBroadcast (bool allowBroadcast)
 }
 
 bool
-QuicSocketBase::GetAllowBroadcast (void) const
+QuicSocketBase::GetAllowBroadcast () const
 {
   return false;
 }
@@ -2520,7 +2520,7 @@ QuicSocketBase::OnReceivedTransportParameters (
 }
 
 int
-QuicSocketBase::DoConnect (void)
+QuicSocketBase::DoConnect ()
 {
   NS_LOG_FUNCTION (this);
 
@@ -2544,7 +2544,7 @@ QuicSocketBase::DoConnect (void)
 }
 
 int
-QuicSocketBase::DoFastConnect (void)
+QuicSocketBase::DoFastConnect ()
 {
   NS_LOG_FUNCTION (this);
   NS_ABORT_MSG_IF (!IsVersionSupported (m_vers),
@@ -2583,7 +2583,7 @@ QuicSocketBase::ConnectionSucceeded ()
 }
 
 int
-QuicSocketBase::DoClose (void)
+QuicSocketBase::DoClose ()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_INFO (this << " DoClose at time " << Simulator::Now ().GetSeconds ());
@@ -3012,7 +3012,7 @@ QuicSocketBase::SetSocketSndBufSize (uint32_t size)
 }
 
 uint32_t
-QuicSocketBase::GetSocketSndBufSize (void) const
+QuicSocketBase::GetSocketSndBufSize () const
 {
   return m_txBuffer->GetMaxBufferSize ();
 }
@@ -3026,7 +3026,7 @@ QuicSocketBase::SetSocketRcvBufSize (uint32_t size)
 }
 
 uint32_t
-QuicSocketBase::GetSocketRcvBufSize (void) const
+QuicSocketBase::GetSocketRcvBufSize () const
 {
   return m_rxBuffer->GetMaxBufferSize ();
 }
@@ -3074,7 +3074,7 @@ QuicSocketBase::SetInitialSSThresh (uint32_t threshold)
 }
 
 uint32_t
-QuicSocketBase::GetInitialSSThresh (void) const
+QuicSocketBase::GetInitialSSThresh () const
 {
   return m_tcb->m_initialSsThresh;
 }
@@ -3113,7 +3113,7 @@ Time QuicSocketBase::GetDefaultLatency ()
 }
 
 void
-QuicSocketBase::NotifyPacingPerformed (void)
+QuicSocketBase::NotifyPacingPerformed ()
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_INFO ("Pacing timer expired, try sending a packet");

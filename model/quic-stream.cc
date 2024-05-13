@@ -44,7 +44,7 @@ const char* const
 QuicStream::QuicStreamStateName[QuicStream::LAST_STATE] = {"IDLE", "OPEN", "SEND", "RECV", "SIZE_KNOWN", "DATA_SENT", "DATA_RECVD", "DATA_READ", "RESET_SENT", "RESET_RECVD", "RESET_READ"};
 
 TypeId
-QuicStream::GetTypeId (void)
+QuicStream::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::QuicStream")
     .SetParent<Object> ()

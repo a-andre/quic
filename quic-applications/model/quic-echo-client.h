@@ -45,7 +45,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   QuicEchoClient ();
 
@@ -86,7 +86,7 @@ public:
    *
    * \returns The number of data bytes.
    */
-  uint32_t GetDataSize (void) const;
+  uint32_t GetDataSize () const;
 
   /**
    * Set the data fill of the packet (what is sent as data to the server) to
@@ -148,15 +148,15 @@ public:
    *
    * \return the stream ID
    */
-  uint32_t GetStreamId (void) const;
+  uint32_t GetStreamId () const;
 
 protected:
-  virtual void DoDispose (void);
+  virtual void DoDispose ();
 
 private:
 
-  virtual void StartApplication (void);
-  virtual void StopApplication (void);
+  virtual void StartApplication ();
+  virtual void StopApplication ();
 
   /**
    * \brief Schedule the next packet transmission
@@ -167,9 +167,9 @@ private:
   /**
    * \brief Send a packet
    */
-  void Send (void);
-  void Close (void);
-  void Restart (void);
+  void Send ();
+  void Close ();
+  void Restart ();
 
   /**
  * \brief Handle a packet reception.

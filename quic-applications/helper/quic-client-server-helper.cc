@@ -59,7 +59,7 @@ QuicServerHelper::Install (NodeContainer c)
 }
 
 Ptr<QuicServer>
-QuicServerHelper::GetServer (void)
+QuicServerHelper::GetServer ()
 {
   return m_server;
 }

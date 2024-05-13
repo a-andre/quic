@@ -78,7 +78,7 @@ public:
    *
    * \returns a Ptr to the last created server application
    */
-  Ptr<QuicServer> GetServer (void);
+  Ptr<QuicServer> GetServer ();
 
 private:
   ObjectFactory m_factory; //!< Object factory.

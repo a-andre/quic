@@ -41,7 +41,7 @@ NS_LOG_COMPONENT_DEFINE ("QuicEchoClientApplication");
 NS_OBJECT_ENSURE_REGISTERED (QuicEchoClient);
 
 TypeId
-QuicEchoClient::GetTypeId (void)
+QuicEchoClient::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::QuicEchoClient")
     .SetParent<Application> ()
@@ -122,14 +122,14 @@ QuicEchoClient::SetRemote (Address addr)
 }
 
 void
-QuicEchoClient::DoDispose (void)
+QuicEchoClient::DoDispose ()
 {
   NS_LOG_FUNCTION (this);
   Application::DoDispose ();
 }
 
 void
-QuicEchoClient::StartApplication (void)
+QuicEchoClient::StartApplication ()
 {
   NS_LOG_INFO ("##########  QUIC Echo Client START at time " << Simulator::Now ().GetSeconds () << " ##########");
   NS_LOG_FUNCTION (this);
@@ -215,7 +215,7 @@ QuicEchoClient::SetDataSize (uint32_t dataSize)
 }
 
 uint32_t
-QuicEchoClient::GetDataSize (void) const
+QuicEchoClient::GetDataSize () const
 {
   NS_LOG_FUNCTION (this);
   return m_size;
@@ -323,7 +323,7 @@ QuicEchoClient::ScheduleRestart (Time dt)
 }
 
 void
-QuicEchoClient::Restart (void)
+QuicEchoClient::Restart ()
 {
   NS_LOG_INFO ("##########  QUIC Echo Client RESTART at time " << Simulator::Now ().GetSeconds () << " ##########");
   NS_LOG_FUNCTION (this);
@@ -377,7 +377,7 @@ QuicEchoClient::Restart (void)
 
 
 void
-QuicEchoClient::Close (void)
+QuicEchoClient::Close ()
 {
   NS_LOG_INFO ("##########  QUIC Echo Client CLOSING at time " << Simulator::Now ().GetSeconds () << " ##########");
   NS_LOG_FUNCTION (this);
@@ -388,7 +388,7 @@ QuicEchoClient::Close (void)
 
 
 void
-QuicEchoClient::Send (void)
+QuicEchoClient::Send ()
 {
   NS_LOG_INFO ("##########  QUIC Echo Client SENDING at time " << Simulator::Now ().GetSeconds () << " ##########");
   NS_LOG_FUNCTION (this);
@@ -506,7 +506,7 @@ QuicEchoClient::SetStreamId (uint32_t streamId)
 }
 
 uint32_t
-QuicEchoClient::GetStreamId (void) const
+QuicEchoClient::GetStreamId () const
 {
   return m_streamId;
 }

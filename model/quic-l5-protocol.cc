@@ -57,7 +57,7 @@ NS_OBJECT_ENSURE_REGISTERED (QuicL5Protocol);
 // if (m_node and m_connectionId) { std::clog << " [node " << m_node->GetId () << " socket " << m_connectionId << "] "; }
 
 TypeId
-QuicL5Protocol::GetTypeId (void)
+QuicL5Protocol::GetTypeId ()
 {
   static TypeId tid =
     TypeId ("ns3::QuicL5Protocol")

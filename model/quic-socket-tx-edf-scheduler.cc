@@ -40,7 +40,7 @@ NS_LOG_COMPONENT_DEFINE ("QuicSocketTxEdfScheduler");
 
 NS_OBJECT_ENSURE_REGISTERED (QuicSocketTxEdfScheduler);
 
-TypeId QuicSocketTxEdfScheduler::GetTypeId (void)
+TypeId QuicSocketTxEdfScheduler::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::QuicSocketTxEdfScheduler")
     .SetParent<QuicSocketTxScheduler>()
@@ -69,7 +69,7 @@ QuicSocketTxEdfScheduler::QuicSocketTxEdfScheduler (
   m_latencyMap = other.m_latencyMap;
 }
 
-QuicSocketTxEdfScheduler::~QuicSocketTxEdfScheduler (void)
+QuicSocketTxEdfScheduler::~QuicSocketTxEdfScheduler ()
 {}
 
 void QuicSocketTxEdfScheduler::Add (Ptr<QuicSocketTxItem> item, bool retx)

@@ -90,7 +90,7 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   QuicStreamRxBuffer ();
   virtual ~QuicStreamRxBuffer ();
@@ -108,7 +108,7 @@ public:
    *
    * \return the maximum buffer size in bytes
    */
-  uint32_t GetMaxBufferSize (void) const;
+  uint32_t GetMaxBufferSize () const;
 
   /**
    * Set the max size of the buffer
@@ -163,7 +163,7 @@ public:
    *
    * \return the buffer occupancy in bytes
    */
-  uint32_t Size (void) const;
+  uint32_t Size () const;
 
 private:
   // TODO consider replacing std::vector with a ordered data structure

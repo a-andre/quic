@@ -63,7 +63,7 @@ QuicSubheader::~QuicSubheader ()
 {}
 
 TypeId
-QuicSubheader::GetTypeId (void)
+QuicSubheader::GetTypeId ()
 {
   static TypeId tid = TypeId ("ns3::QuicSubHeader")
     .SetParent<Header> ()
@@ -74,7 +74,7 @@ QuicSubheader::GetTypeId (void)
 }
 
 TypeId
-QuicSubheader::GetInstanceTypeId (void) const
+QuicSubheader::GetInstanceTypeId () const
 {
   return GetTypeId ();
 }
@@ -142,7 +142,7 @@ QuicSubheader::TransportErrorCodeToString () const
 
 
 uint32_t
-QuicSubheader::GetSerializedSize (void) const
+QuicSubheader::GetSerializedSize () const
 {
   NS_LOG_FUNCTION (this << (uint64_t)m_frameType);
 
@@ -978,7 +978,7 @@ QuicSubheader::GetVarInt64Size (uint64_t varInt64)
 }
 
 QuicSubheader
-QuicSubheader::CreatePadding (void)
+QuicSubheader::CreatePadding ()
 {
   NS_LOG_INFO ("Created Padding Header");
 
@@ -1085,7 +1085,7 @@ QuicSubheader::CreateMaxStreamId (uint64_t maxStreamId)
 }
 
 QuicSubheader
-QuicSubheader::CreatePing (void)
+QuicSubheader::CreatePing ()
 {
   NS_LOG_INFO ("Created Ping Header");
 

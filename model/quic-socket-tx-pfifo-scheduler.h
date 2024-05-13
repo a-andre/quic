@@ -42,11 +42,11 @@ public:
    * \brief Get the type ID.
    * \return the object TypeId
    */
-  static TypeId GetTypeId (void);
+  static TypeId GetTypeId ();
 
   QuicSocketTxPFifoScheduler ();
   QuicSocketTxPFifoScheduler (const QuicSocketTxPFifoScheduler &other);
-  virtual ~QuicSocketTxPFifoScheduler (void);
+  virtual ~QuicSocketTxPFifoScheduler ();
 
   /**
    * Add a tx item to the scheduling list and assign priority
