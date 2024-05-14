@@ -48,11 +48,11 @@ public:
   /**
    * \brief Quic header form bit values
    */
-  typedef enum
+  enum class Format
   {
     SHORT = 0,  //!< Short header
     LONG  = 1   //!< Long header
-  } TypeFormat_t;
+  };
 
   /**
    * \brief Quic long header type byte values
@@ -70,11 +70,11 @@ public:
   /**
    * \brief Quic header key phase bit values
    */
-  typedef enum
+  enum class KeyPhase
   {
-    PHASE_ZERO = 0,  //!< Phase 0
-    PHASE_ONE  = 1   //!< Phase 1
-  } KeyPhase_t;
+    ZERO = 0,  //!< Phase 0
+    ONE  = 1   //!< Phase 1
+  };
 
   /**
    * \brief Quic packet number encodings for headers
@@ -172,7 +172,7 @@ public:
    * \param keyPhaseBit the key phase, which allows a recipient of a packet to identify the packet protection keys that are used to protect the packet.
    * \return the generated QuicHeader
    */
-  static QuicHeader CreateShort (uint64_t connectionId, SequenceNumber32 packetNumber, bool connectionIdFlag = true, bool keyPhaseBit = QuicHeader::PHASE_ZERO);
+  static QuicHeader CreateShort (uint64_t connectionId, SequenceNumber32 packetNumber, bool connectionIdFlag = true, KeyPhase keyPhaseBit = KeyPhase::ZERO);
 
   // Getters, Setters and Controls
 
@@ -238,25 +238,25 @@ public:
    * \brief Get the key phase bit
    * \return The key phase bit for this QuicHeader
    */
-  bool GetKeyPhaseBit () const;
+  KeyPhase GetKeyPhaseBit() const;
 
   /**
    * \brief Set the key phase bit
    * \param keyPhaseBit the key phase bit for this QuicHeader
    */
-  void SetKeyPhaseBit (bool keyPhaseBit);
+  void SetKeyPhaseBit (KeyPhase keyPhaseBit);
 
   /**
    * \brief Get the form bit
    * \return The form bit for this QuicHeader
    */
-  uint8_t GetFormat () const;
+  Format GetFormat() const;
 
   /**
    * \brief Set the form bit
    * \param form the form bit for this QuicHeader
    */
-  void SetFormat (bool form);
+  void SetFormat (Format form);
 
   /**
    * \brief Check if the header is Short
@@ -334,14 +334,18 @@ private:
    */
   uint32_t CalculateHeaderLength () const;
 
-  bool m_form;                      //!< Form bit
+  Format m_form;                    //!< Form bit
   bool m_c;                         //!< Connection id flag
-  bool m_k;                         //!< Key phase bit
+  KeyPhase m_k;                     //!< Key phase bit
   uint8_t m_type;                   //!< Type byte
   uint64_t m_connectionId;          //!< Connection Id
   SequenceNumber32 m_packetNumber;  //!< Packet number
   uint32_t m_version;               //!< Version
 };
+
+std::ostream& operator<<(std::ostream& os, QuicHeader::Format format);
+
+std::ostream& operator<<(std::ostream& os, QuicHeader::KeyPhase phase);
 
 } // namespace ns3
 

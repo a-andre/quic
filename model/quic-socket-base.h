@@ -760,7 +760,7 @@ protected:
   bool m_connected;                         //!< Check if connection is established
   uint64_t m_connectionId;                  //!< Connection id
   uint32_t m_vers;                          //!< Quic protocol version
-  QuicHeader::KeyPhase_t m_keyPhase;        //!< Key phase
+  QuicHeader::KeyPhase m_keyPhase;          //!< Key phase
   Time m_lastReceived;                      //!< Time of last received packet
 
   // Transport Parameters values

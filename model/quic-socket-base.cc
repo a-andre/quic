@@ -451,7 +451,7 @@ QuicSocketBase::QuicSocketBase (void)
     m_connectionId (0),
     m_vers (
       QUIC_VERSION_NS3_IMPL),
-    m_keyPhase (QuicHeader::PHASE_ZERO),
+    m_keyPhase (QuicHeader::KeyPhase::ZERO),
     m_lastReceived (Seconds (0.0)),
     m_initial_max_stream_data (
       0),
@@ -548,7 +548,7 @@ QuicSocketBase::QuicSocketBase (const QuicSocketBase& sock)   // Copy constructo
     m_connected (sock.m_connected),
     m_connectionId (0),
     m_vers (sock.m_vers),
-    m_keyPhase (QuicHeader::PHASE_ZERO),
+    m_keyPhase (QuicHeader::KeyPhase::ZERO),
     m_lastReceived (sock.m_lastReceived),
     m_initial_max_stream_data (sock.m_initial_max_stream_data),
     m_max_data (sock.m_max_data),
@@ -1243,10 +1243,10 @@ QuicSocketBase::SendAck ()
   //         head = QuicHeader::Create0RTT (m_connectionId, m_vers,
   //                                        packetNumber);
   //         m_connected = true;
-  //         m_keyPhase == QuicHeader::PHASE_ONE ? m_keyPhase =
-  //                                                   QuicHeader::PHASE_ZERO :
+  //         m_keyPhase == QuicHeader::KeyPhase::ONE ? m_keyPhase =
+  //                                                   QuicHeader::KeyPhase::ZERO :
   //                                               m_keyPhase =
-  //                                                   QuicHeader::PHASE_ONE;
+  //                                                   QuicHeader::KeyPhase::ONE;
   //       }
   //     else
   //       {
@@ -1361,10 +1361,10 @@ QuicSocketBase::SendDataPacket (SequenceNumber32 packetNumber,
           head = QuicHeader::Create0RTT (m_connectionId, m_vers,
                                          packetNumber);
           m_connected = true;
-          m_keyPhase == QuicHeader::PHASE_ONE ? m_keyPhase =
-            QuicHeader::PHASE_ZERO :
+          m_keyPhase == QuicHeader::KeyPhase::ONE ? m_keyPhase =
+            QuicHeader::KeyPhase::ZERO :
             m_keyPhase =
-              QuicHeader::PHASE_ONE;
+              QuicHeader::KeyPhase::ONE;
         }
       else
         {
@@ -2640,10 +2640,10 @@ QuicSocketBase::ReceivedData (Ptr<Packet> p, const QuicHeader& quicHeader,
       m_receivedPacketNumbers.push_back (quicHeader.GetPacketNumber ());
 
       m_connected = true;
-      m_keyPhase == QuicHeader::PHASE_ONE ? m_keyPhase =
-        QuicHeader::PHASE_ZERO :
+      m_keyPhase == QuicHeader::KeyPhase::ONE ? m_keyPhase =
+        QuicHeader::KeyPhase::ZERO :
         m_keyPhase =
-          QuicHeader::PHASE_ONE;
+          QuicHeader::KeyPhase::ONE;
       SetState (OPEN);
       Simulator::ScheduleNow (&QuicSocketBase::ConnectionSucceeded, this);
       m_congestionControl->CongestionStateSet (m_tcb,

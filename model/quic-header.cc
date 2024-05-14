@@ -36,9 +36,9 @@ NS_LOG_COMPONENT_DEFINE ("QuicHeader");
 NS_OBJECT_ENSURE_REGISTERED (QuicHeader);
 
 QuicHeader::QuicHeader ()
-  : m_form (SHORT),
+  : m_form (Format::SHORT),
   m_c (false),
-  m_k (PHASE_ZERO),
+  m_k (KeyPhase::ZERO),
   m_type (0),
   m_connectionId (0),
   m_packetNumber (0),
@@ -101,7 +101,7 @@ QuicHeader::GetInstanceTypeId (void) const
 uint32_t
 QuicHeader::GetSerializedSize (void) const
 {
-  NS_ASSERT (m_type != NONE or m_form == SHORT);
+  NS_ASSERT (m_type != NONE or m_form == Format::SHORT);
 
   uint32_t serializesSize = CalculateHeaderLength ();
   NS_LOG_INFO ("Serialized Size " << serializesSize);
@@ -161,14 +161,14 @@ void
 QuicHeader::Serialize (Buffer::Iterator start) const
 {
   NS_LOG_FUNCTION (this);
-  NS_ASSERT (m_type != NONE or m_form == SHORT);
+  NS_ASSERT (m_type != NONE or m_form == Format::SHORT);
   NS_LOG_INFO ("Serialize::Serialized Size " << CalculateHeaderLength ());
 
   Buffer::Iterator i = start;
 
-  uint8_t t = m_type + (m_form << 7);
+  uint8_t t = m_type + (static_cast<uint8_t>(m_form) << 7);
 
-  if (m_form)
+  if (m_form == Format::LONG)
     {
       i.WriteU8 (t);
       i.WriteHtonU64 (m_connectionId);
@@ -180,7 +180,7 @@ QuicHeader::Serialize (Buffer::Iterator start) const
     }
   else
     {
-      t += (m_c << 6) + (m_k << 5);
+      t += (m_c << 6) + (static_cast<uint8_t>(m_k) << 5);
       i.WriteU8 (t);
 
       if (m_c)
@@ -212,19 +212,19 @@ QuicHeader::Deserialize (Buffer::Iterator start)
 
   uint8_t t = i.ReadU8 ();
 
-  m_form = (t & 0x80) >> 7;
+  m_form = static_cast<Format>((t & 0x80) >> 7);
 
   if (IsShort ())
     {
       m_c = (t & 0x40) >> 6;
-      m_k = (t & 0x20) >> 5;
+      m_k = static_cast<KeyPhase>((t & 0x20) >> 5);
       SetTypeByte (t & 0x1F);
     }
   else
     {
       SetTypeByte (t & 0x7F);
     }
-  NS_ASSERT (m_type != NONE or m_form == SHORT);
+  NS_ASSERT (m_type != NONE or m_form == Format::SHORT);
 
   if (HasConnectionId ())
     {
@@ -263,7 +263,7 @@ QuicHeader::Deserialize (Buffer::Iterator start)
 void
 QuicHeader::Print (std::ostream &os) const
 {
-  NS_ASSERT (m_type != NONE or m_form == SHORT);
+  NS_ASSERT (m_type != NONE or m_form == Format::SHORT);
 
   os << "|" << m_form << "|";
 
@@ -296,7 +296,7 @@ QuicHeader::CreateInitial (uint64_t connectionId, uint32_t version, SequenceNumb
   NS_LOG_INFO ("Create Initial Helper called");
 
   QuicHeader head;
-  head.SetFormat (QuicHeader::LONG);
+  head.SetFormat (QuicHeader::Format::LONG);
   head.SetTypeByte (QuicHeader::INITIAL);
   head.SetConnectionID (connectionId);
   head.SetVersion (version);
@@ -312,7 +312,7 @@ QuicHeader::CreateRetry (uint64_t connectionId, uint32_t version, SequenceNumber
   NS_LOG_INFO ("Create Retry Helper called");
 
   QuicHeader head;
-  head.SetFormat (QuicHeader::LONG);
+  head.SetFormat (QuicHeader::Format::LONG);
   head.SetTypeByte (QuicHeader::RETRY);
   head.SetConnectionID (connectionId);
   head.SetVersion (version);
@@ -327,7 +327,7 @@ QuicHeader::CreateHandshake (uint64_t connectionId, uint32_t version, SequenceNu
   NS_LOG_INFO ("Create Handshake Helper called ");
 
   QuicHeader head;
-  head.SetFormat (QuicHeader::LONG);
+  head.SetFormat (QuicHeader::Format::LONG);
   head.SetTypeByte (QuicHeader::HANDSHAKE);
   head.SetConnectionID (connectionId);
   head.SetVersion (version);
@@ -342,7 +342,7 @@ QuicHeader::Create0RTT (uint64_t connectionId, uint32_t version, SequenceNumber3
   NS_LOG_INFO ("Create 0RTT Helper called");
 
   QuicHeader head;
-  head.SetFormat (QuicHeader::LONG);
+  head.SetFormat (QuicHeader::Format::LONG);
   head.SetTypeByte (QuicHeader::ZRTT_PROTECTED);
   head.SetConnectionID (connectionId);
   head.SetVersion (version);
@@ -352,12 +352,12 @@ QuicHeader::Create0RTT (uint64_t connectionId, uint32_t version, SequenceNumber3
 }
 
 QuicHeader
-QuicHeader::CreateShort (uint64_t connectionId, SequenceNumber32 packetNumber, bool connectionIdFlag, bool keyPhaseBit)
+QuicHeader::CreateShort (uint64_t connectionId, SequenceNumber32 packetNumber, bool connectionIdFlag, KeyPhase keyPhaseBit)
 {
   NS_LOG_INFO ("Create Short Helper called");
 
   QuicHeader head;
-  head.SetFormat (QuicHeader::SHORT);
+  head.SetFormat (QuicHeader::Format::SHORT);
   head.SetKeyPhaseBit (keyPhaseBit);
   head.SetPacketNumber (packetNumber);
 
@@ -375,7 +375,7 @@ QuicHeader::CreateVersionNegotiation (uint64_t connectionId, uint32_t version, s
   NS_LOG_INFO ("Create Version Negotiation Helper called");
 
   QuicHeader head;
-  head.SetFormat (QuicHeader::LONG);
+  head.SetFormat (QuicHeader::Format::LONG);
   head.SetTypeByte (QuicHeader::VERSION_NEGOTIATION);
   head.SetConnectionID (connectionId);
   head.SetVersion (version);
@@ -411,14 +411,14 @@ QuicHeader::SetTypeByte (uint8_t typeByte)
   m_type = typeByte;
 }
 
-uint8_t
+QuicHeader::Format
 QuicHeader::GetFormat () const
 {
   return m_form;
 }
 
 void
-QuicHeader::SetFormat (bool form)
+QuicHeader::SetFormat (Format form)
 {
   m_form = form;
 }
@@ -482,7 +482,7 @@ QuicHeader::SetVersion (uint32_t version)
   m_version = version;
 }
 
-bool
+QuicHeader::KeyPhase
 QuicHeader::GetKeyPhaseBit () const
 {
   NS_ASSERT (IsShort ());
@@ -490,7 +490,7 @@ QuicHeader::GetKeyPhaseBit () const
 }
 
 void
-QuicHeader::SetKeyPhaseBit (bool keyPhaseBit)
+QuicHeader::SetKeyPhaseBit (QuicHeader::KeyPhase keyPhaseBit)
 {
   NS_ASSERT (IsShort ());
   m_k = keyPhaseBit;
@@ -498,7 +498,7 @@ QuicHeader::SetKeyPhaseBit (bool keyPhaseBit)
 
 bool QuicHeader::IsShort () const
 {
-  return m_form == SHORT;
+  return m_form == Format::SHORT;
 }
 
 bool
@@ -560,6 +560,32 @@ operator<< (std::ostream& os, QuicHeader& tc)
 {
   tc.Print (os);
   return os;
+}
+
+std::ostream&
+operator<<(std::ostream& os, QuicHeader::Format format)
+{
+    switch (format)
+    {
+    case QuicHeader::Format::SHORT:
+        return os << "SHORT";
+    case QuicHeader::Format::LONG:
+        return os << "LONG";
+    };
+    return os << "UNKNOWN(" << static_cast<uint32_t>(format) << ")";
+}
+
+std::ostream&
+operator<<(std::ostream& os, QuicHeader::KeyPhase phase)
+{
+    switch (phase)
+    {
+    case QuicHeader::KeyPhase::ZERO:
+        return os << "ZERO";
+    case QuicHeader::KeyPhase::ONE:
+        return os << "ONE";
+    };
+    return os << "UNKNOWN(" << static_cast<uint32_t>(phase) << ")";
 }
 
 } // namespace ns3

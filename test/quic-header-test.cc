@@ -155,7 +155,7 @@ QuicHeaderTestCase::TestQuicHeaderSerializeDeserialize ()
                   buffer.AddAtStart (head.GetSerializedSize ());
                   head.Serialize (buffer.Begin ());
 
-                  NS_TEST_ASSERT_MSG_EQ (head.GetFormat (), QuicHeader::LONG,
+                  NS_TEST_ASSERT_MSG_EQ (head.GetFormat (), QuicHeader::Format::LONG,
                                              "Different format found");
                   NS_TEST_ASSERT_MSG_EQ (head.GetTypeByte (), QuicHeader::VERSION_NEGOTIATION,
                                              "Different type byte found");
@@ -168,7 +168,7 @@ QuicHeaderTestCase::TestQuicHeaderSerializeDeserialize ()
 
                   copyHead.Deserialize (buffer.Begin ());
 
-                  NS_TEST_ASSERT_MSG_EQ (head.GetFormat (), QuicHeader::LONG,
+                  NS_TEST_ASSERT_MSG_EQ (head.GetFormat (), QuicHeader::Format::LONG,
                                              "Different format found in deserialized header");
                   NS_TEST_ASSERT_MSG_EQ (head.GetTypeByte (), QuicHeader::VERSION_NEGOTIATION,
                                          "Different type byte found in deserialized header");
@@ -188,7 +188,7 @@ QuicHeaderTestCase::TestQuicHeaderSerializeDeserialize ()
                   buffer.AddAtStart (head.GetSerializedSize ());
                   head.Serialize (buffer.Begin ());
 
-                  NS_TEST_ASSERT_MSG_EQ (head.GetFormat (), QuicHeader::LONG,
+                  NS_TEST_ASSERT_MSG_EQ (head.GetFormat (), QuicHeader::Format::LONG,
                                              "Different format found");
                   NS_TEST_ASSERT_MSG_EQ (head.GetTypeByte (), QuicHeader::INITIAL,
                                              "Different type byte found");
@@ -203,7 +203,7 @@ QuicHeaderTestCase::TestQuicHeaderSerializeDeserialize ()
 
                   copyHead.Deserialize (buffer.Begin ());
 
-                  NS_TEST_ASSERT_MSG_EQ (head.GetFormat (), QuicHeader::LONG,
+                  NS_TEST_ASSERT_MSG_EQ (head.GetFormat (), QuicHeader::Format::LONG,
                                              "Different format found in deserialized header");
                   NS_TEST_ASSERT_MSG_EQ (head.GetTypeByte (), QuicHeader::INITIAL,
                                          "Different type byte found in deserialized header");
@@ -225,7 +225,7 @@ QuicHeaderTestCase::TestQuicHeaderSerializeDeserialize ()
                   buffer.AddAtStart (head.GetSerializedSize ());
                   head.Serialize (buffer.Begin ());
 
-                  NS_TEST_ASSERT_MSG_EQ (head.GetFormat (), QuicHeader::LONG,
+                  NS_TEST_ASSERT_MSG_EQ (head.GetFormat (), QuicHeader::Format::LONG,
                                              "Different format found");
                   NS_TEST_ASSERT_MSG_EQ (head.GetTypeByte (), QuicHeader::RETRY,
                                              "Different type byte found");
@@ -240,7 +240,7 @@ QuicHeaderTestCase::TestQuicHeaderSerializeDeserialize ()
 
                   copyHead.Deserialize (buffer.Begin ());
 
-                  NS_TEST_ASSERT_MSG_EQ (head.GetFormat (), QuicHeader::LONG,
+                  NS_TEST_ASSERT_MSG_EQ (head.GetFormat (), QuicHeader::Format::LONG,
                                              "Different format found in deserialized header");
                   NS_TEST_ASSERT_MSG_EQ (head.GetTypeByte (), QuicHeader::RETRY,
                                          "Different type byte found in deserialized header");
@@ -262,7 +262,7 @@ QuicHeaderTestCase::TestQuicHeaderSerializeDeserialize ()
                   buffer.AddAtStart (head.GetSerializedSize ());
                   head.Serialize (buffer.Begin ());
 
-                  NS_TEST_ASSERT_MSG_EQ (head.GetFormat (), QuicHeader::LONG,
+                  NS_TEST_ASSERT_MSG_EQ (head.GetFormat (), QuicHeader::Format::LONG,
                                              "Different format found");
                   NS_TEST_ASSERT_MSG_EQ (head.GetTypeByte (), QuicHeader::HANDSHAKE,
                                              "Different type byte found");
@@ -277,7 +277,7 @@ QuicHeaderTestCase::TestQuicHeaderSerializeDeserialize ()
 
                   copyHead.Deserialize (buffer.Begin ());
 
-                  NS_TEST_ASSERT_MSG_EQ (head.GetFormat (), QuicHeader::LONG,
+                  NS_TEST_ASSERT_MSG_EQ (head.GetFormat (), QuicHeader::Format::LONG,
                                              "Different format found in deserialized header");
                   NS_TEST_ASSERT_MSG_EQ (head.GetTypeByte (), QuicHeader::HANDSHAKE,
                                          "Different type byte found in deserialized header");
@@ -299,7 +299,7 @@ QuicHeaderTestCase::TestQuicHeaderSerializeDeserialize ()
                   buffer.AddAtStart (head.GetSerializedSize ());
                   head.Serialize (buffer.Begin ());
 
-                  NS_TEST_ASSERT_MSG_EQ (head.GetFormat (), QuicHeader::LONG,
+                  NS_TEST_ASSERT_MSG_EQ (head.GetFormat (), QuicHeader::Format::LONG,
                                              "Different format found");
                   NS_TEST_ASSERT_MSG_EQ (head.GetTypeByte (), QuicHeader::ZRTT_PROTECTED,
                                              "Different type byte found");
@@ -314,7 +314,7 @@ QuicHeaderTestCase::TestQuicHeaderSerializeDeserialize ()
 
                   copyHead.Deserialize (buffer.Begin ());
 
-                  NS_TEST_ASSERT_MSG_EQ (head.GetFormat (), QuicHeader::LONG,
+                  NS_TEST_ASSERT_MSG_EQ (head.GetFormat (), QuicHeader::Format::LONG,
                                              "Different format found in deserialized header");
                   NS_TEST_ASSERT_MSG_EQ (head.GetTypeByte (), QuicHeader::ZRTT_PROTECTED,
                                          "Different type byte found in deserialized header");
@@ -333,7 +333,7 @@ QuicHeaderTestCase::TestQuicHeaderSerializeDeserialize ()
         }
         
         bool connectionIdFlag = (i % 2 == 0) ? true : false;
-        bool keyPhaseBit = (i % 2 == 0) ? QuicHeader::PHASE_ZERO : QuicHeader::PHASE_ONE;
+        QuicHeader::KeyPhase keyPhaseBit = (i % 2 == 0) ? QuicHeader::KeyPhase::ZERO : QuicHeader::KeyPhase::ONE;
 
         head = QuicHeader::CreateShort (connectionId, packetNumber, connectionIdFlag, keyPhaseBit);
 
@@ -343,7 +343,7 @@ QuicHeaderTestCase::TestQuicHeaderSerializeDeserialize ()
         buffer.AddAtStart (head.GetSerializedSize ());
         head.Serialize (buffer.Begin ());
 
-        NS_TEST_ASSERT_MSG_EQ (head.GetFormat (), QuicHeader::SHORT,
+        NS_TEST_ASSERT_MSG_EQ (head.GetFormat (), QuicHeader::Format::SHORT,
                                    "Different format found");
         NS_TEST_ASSERT_MSG_EQ (head.GetKeyPhaseBit (), keyPhaseBit,
                                    "Different key phase bit found");
@@ -358,7 +358,7 @@ QuicHeaderTestCase::TestQuicHeaderSerializeDeserialize ()
 
         copyHead.Deserialize (buffer.Begin ());
 
-        NS_TEST_ASSERT_MSG_EQ (copyHead.GetFormat (), QuicHeader::SHORT,
+        NS_TEST_ASSERT_MSG_EQ (copyHead.GetFormat (), QuicHeader::Format::SHORT,
                                    "Different format found");
         NS_TEST_ASSERT_MSG_EQ (copyHead.GetKeyPhaseBit (), keyPhaseBit,
                                    "Different key phase bit found");
