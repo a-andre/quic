@@ -40,9 +40,6 @@ NS_LOG_COMPONENT_DEFINE ("QuicStream");
 
 NS_OBJECT_ENSURE_REGISTERED (QuicStream);
 
-const char* const
-QuicStream::QuicStreamStateName[QuicStream::LAST_STATE] = {"IDLE", "OPEN", "SEND", "RECV", "SIZE_KNOWN", "DATA_SENT", "DATA_RECVD", "DATA_READ", "RESET_SENT", "RESET_RECVD", "RESET_READ"};
-
 TypeId
 QuicStream::GetTypeId (void)
 {
@@ -62,6 +59,54 @@ QuicStream::QuicStream ()
 QuicStream::~QuicStream ()
 {
   NS_LOG_FUNCTION_NOARGS ();
+}
+
+std::ostream&
+operator<<(std::ostream& os, QuicStream::Direction direction)
+{
+  switch (direction)
+  {
+  case QuicStream::Direction::SENDER:
+      return os << "SENDER";
+  case QuicStream::Direction::RECEIVER:
+      return os << "RECEIVER";
+  case QuicStream::Direction::BIDIRECTIONAL:
+      return os << "BIDIRECTIONAL";
+  case QuicStream::Direction::UNKNOWN:
+      return os << "UNKNOWN";
+  };
+  return os << "UNKNOWN(" << static_cast<uint32_t>(direction) << ")";
+}
+
+std::ostream&
+operator<<(std::ostream& os, QuicStream::State state)
+{
+  switch (state)
+  {
+  case QuicStream::State::IDLE:
+      return os << "IDLE";
+  case QuicStream::State::OPEN:
+      return os << "OPEN";
+  case QuicStream::State::SEND:
+      return os << "SEND";
+  case QuicStream::State::RECV:
+      return os << "RECV";
+  case QuicStream::State::SIZE_KNOWN:
+      return os << "SIZE_KNOWN";
+  case QuicStream::State::DATA_SENT:
+      return os << "DATA_SENT";
+  case QuicStream::State::DATA_RECVD:
+      return os << "DATA_RECVD";
+  case QuicStream::State::DATA_READ:
+      return os << "DATA_READ";
+  case QuicStream::State::RESET_SENT:
+      return os << "RESET_SENT";
+  case QuicStream::State::RESET_RECVD:
+      return os << "RESET_RECVD";
+  case QuicStream::State::RESET_READ:
+      return os << "RESET_READ";
+  };
+  return os << "UNKNOWN(" << static_cast<uint32_t>(state) << ")";
 }
 
 } // namespace ns3

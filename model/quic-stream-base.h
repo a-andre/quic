@@ -182,14 +182,13 @@ public:
   uint32_t GetStreamRcvBufSize (void) const;
 
   // Implementation of QuicStream virtuals
-  std::string StreamDirectionTypeToString () const;
-  void SetStreamDirectionType (const QuicStreamDirectionTypes_t& streamDirectionType);
-  QuicStreamDirectionTypes_t GetStreamDirectionType ();
-  void SetStreamType (const QuicStreamTypes_t& streamType);
-  void SetStreamStateSendIf (bool condition, const QuicStreamStates_t& streamState);
-  void SetStreamStateSend (const QuicStreamStates_t& streamState);
-  void SetStreamStateRecv (const QuicStreamStates_t& streamState);
-  void SetStreamStateRecvIf (bool condition, const QuicStreamStates_t& streamState);
+  void SetStreamDirectionType (const Direction& streamDirectionType);
+  Direction GetStreamDirectionType ();
+  void SetStreamType (const Type& streamType);
+  void SetStreamStateSendIf (bool condition, const State& streamState);
+  void SetStreamStateSend (const State& streamState);
+  void SetStreamStateRecv (const State& streamState);
+  void SetStreamStateRecvIf (bool condition, const State& streamState);
   void SetNode (Ptr<Node> node);
   void SetConnectionId (uint64_t connId);
   void SetStreamId (uint64_t streamId);
@@ -197,10 +196,10 @@ public:
   uint32_t GetStreamTxAvailable (void) const;
 
 protected:
-  QuicStreamTypes_t m_streamType;                    //!< The stream type
-  QuicStreamDirectionTypes_t m_streamDirectionType;  //!< The stream direction
-  QuicStreamStates_t m_streamStateSend;              //!< The state of the send stream
-  QuicStreamStates_t m_streamStateRecv;              //!< The state of the receive stream
+  Type m_streamType;                                 //!< The stream type
+  Direction m_streamDirectionType;                   //!< The stream direction
+  State m_streamStateSend;                           //!< The state of the send stream
+  State m_streamStateRecv;                           //!< The state of the receive stream
   Ptr<Node> m_node;                                  //!< The node this stream is associated with
   uint64_t m_connectionId;                           //!< The connection ID
   uint64_t m_streamId;                               //!< The stream ID

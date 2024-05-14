@@ -56,30 +56,30 @@ public:
   /**
    * \brief Quic Stream types, which are represented by the 2 lsb of stream Id
    */
-  typedef enum
+  enum class Type
   {
     CLIENT_INITIATED_BIDIRECTIONAL = 0,  //!< Client Initiated Bidirectional Stream
     SERVER_INITIATED_BIDIRECTIONAL,      //!< Server Initiated Bidirectional Stream
     CLIENT_INITIATED_UNIDIRECTIONAL,     //!< Client Initiated Unidirectional Stream
     SERVER_INITIATED_UNIDIRECTIONAL,     //!< Server Initiated Unidirectional Stream
     NONE                                 //!< Unknown Stream types
-  } QuicStreamTypes_t;
+  };
 
   /**
    * \brief Quic Stream direction types
    */
-  typedef enum
+  enum class Direction
   {
     SENDER = 0,     //!< Sender Stream
     RECEIVER,       //!< Receiver Stream
     BIDIRECTIONAL,  //!< Bidirectional Stream
     UNKNOWN         //!< Unknown direction type
-  } QuicStreamDirectionTypes_t;
+  };
 
   /**
    * \brief Quic Stream states
    */
-  typedef enum
+  enum class State
   {
     IDLE = 0,     //!< Idle (no state yet)
     OPEN,         //!< Initial state for a Sender Stream [Sender]
@@ -92,41 +92,28 @@ public:
     RESET_SENT,   //!< Abandon transmission of stream data [Sender]
     RESET_RECVD,  //!< Packet containing a RST_STREAM has been acknowledged [Sender] / delivery of stream data to the application to be interrupted [Receiver]
     RESET_READ,   //!< Application has been delivered the signal indicating that the Receiver stream has been reset [Receiver]
-    LAST_STATE    //!< Last State for debug
-  } QuicStreamStates_t;
-
-  /**
-   * \brief return a string with the QuicStreamDirectionTypes_t
-   *
-   * \return a string with the QuicStreamDirectionTypes_t
-   */
-  virtual std::string StreamDirectionTypeToString () const = 0;
-
-  /**
-   * \brief Literal names of Quic Stream states for use in log messages
-   */
-  static const char* const QuicStreamStateName[QuicStream::LAST_STATE];
+  };
 
   /**
    * Set the stream direction
    *
    * \param streamDirectionType a QuicStreamDirectionTypes_t with the stream direction
    */
-  virtual void SetStreamDirectionType (const QuicStreamDirectionTypes_t& streamDirectionType) = 0;
+  virtual void SetStreamDirectionType (const Direction& streamDirectionType) = 0;
 
   /**
    * Get the stream direction
    *
    * \return a QuicStreamDirectionTypes_t with the stream direction
    */
-  virtual QuicStreamDirectionTypes_t GetStreamDirectionType () = 0;
+  virtual Direction GetStreamDirectionType () = 0;
 
   /**
    * \brief Set the stream type
    *
    * \param streamType the stream type
    */
-  virtual void SetStreamType (const QuicStreamTypes_t& streamType) = 0;
+  virtual void SetStreamType (const Type& streamType) = 0;
 
   /**
    * \brief check the input condition, and, if true, set the input stream state for the send stream
@@ -134,21 +121,21 @@ public:
    * \param condition a boolean condition
    * \param streamState the new QuicStreamStates_t to be applied if the condition holds
    */
-  virtual void SetStreamStateSendIf (bool condition, const QuicStreamStates_t& streamState) = 0;
+  virtual void SetStreamStateSendIf (bool condition, const State& streamState) = 0;
 
   /**
    * \brief set the input stream state for the send stream
    *
    * \param streamState the new QuicStreamStates_t to be applied
    */
-  virtual void SetStreamStateSend (const QuicStreamStates_t& streamState) = 0;
+  virtual void SetStreamStateSend (const State& streamState) = 0;
 
   /**
    * \brief set the input stream state for the rx stream
    *
    * \param streamState the new QuicStreamStates_t to be applied
    */
-  virtual void SetStreamStateRecv (const QuicStreamStates_t& streamState) = 0;
+  virtual void SetStreamStateRecv (const State& streamState) = 0;
 
   /**
    * \brief check the input condition, and, if true, set the input stream state for the rx stream
@@ -156,7 +143,7 @@ public:
    * \param condition a boolean condition
    * \param streamState the new QuicStreamStates_t to be applied if the condition holds
    */
-  virtual void SetStreamStateRecvIf (bool condition, const QuicStreamStates_t& streamState) = 0;
+  virtual void SetStreamStateRecvIf (bool condition, const State& streamState) = 0;
 
   /**
    * Set the node of this stream
@@ -194,6 +181,10 @@ public:
   virtual uint32_t GetStreamTxAvailable (void) const = 0;
 
 };
+
+std::ostream& operator<<(std::ostream& os, QuicStream::Direction direction);
+
+std::ostream& operator<<(std::ostream& os, QuicStream::State state);
 
 } // namespace ns3
 

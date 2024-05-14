@@ -91,7 +91,7 @@ QuicL5Protocol::~QuicL5Protocol ()
 
 void
 QuicL5Protocol::CreateStream (
-  const QuicStreamBase::QuicStreamDirectionTypes_t streamDirectionType)
+  const QuicStreamBase::Direction streamDirectionType)
 {
   NS_LOG_FUNCTION (this);
   NS_LOG_INFO ("Create the stream with ID " << m_streams.size ());
@@ -106,11 +106,11 @@ QuicL5Protocol::CreateStream (
   stream->SetStreamId ((uint64_t) m_streams.size ());
 
   uint64_t mask = 0x00000003;
-  if ((m_streams.size () & mask) == QuicStream::CLIENT_INITIATED_BIDIRECTIONAL
-      or (m_streams.size () & mask)
-      == QuicStream::SERVER_INITIATED_BIDIRECTIONAL)
+  if (static_cast<QuicStream::Type>(m_streams.size () & mask) == QuicStream::Type::CLIENT_INITIATED_BIDIRECTIONAL
+      or static_cast<QuicStream::Type>(m_streams.size () & mask)
+      == QuicStream::Type::SERVER_INITIATED_BIDIRECTIONAL)
     {
-      stream->SetStreamDirectionType (QuicStream::BIDIRECTIONAL);
+      stream->SetStreamDirectionType (QuicStream::Direction::BIDIRECTIONAL);
 
     }
   else
@@ -133,7 +133,7 @@ QuicL5Protocol::CreateStream (
 
 void
 QuicL5Protocol::CreateStream (
-  const QuicStream::QuicStreamDirectionTypes_t streamDirectionType,
+  const QuicStream::Direction streamDirectionType,
   uint64_t streamNum)
 {
 
@@ -176,7 +176,7 @@ QuicL5Protocol::DispatchSend (Ptr<Packet> data)
   if (m_streams.size () != m_socket->GetMaxStreamId ())
     {
       NS_LOG_INFO ("Create the missing streams");
-      CreateStream (QuicStream::SENDER, m_socket->GetMaxStreamId ());   // TODO open up to max_stream_uni and max_stream_bidi
+      CreateStream (QuicStream::Direction::SENDER, m_socket->GetMaxStreamId ());   // TODO open up to max_stream_uni and max_stream_bidi
     }
 
   std::vector<Ptr<Packet> > disgregated = DisgregateSend (data);
@@ -191,10 +191,10 @@ QuicL5Protocol::DispatchSend (Ptr<Packet> data)
           jt = m_streams.begin () + 1;
         }
       NS_LOG_LOGIC (
-        this << " " << (uint64_t)(*jt)->GetStreamDirectionType () << (uint64_t) QuicStream::SENDER << (uint64_t) QuicStream::BIDIRECTIONAL);
+        this << " " << (uint64_t)(*jt)->GetStreamDirectionType () << (uint64_t) QuicStream::Direction::SENDER << (uint64_t) QuicStream::Direction::BIDIRECTIONAL);
 
-      if ((*jt)->GetStreamDirectionType () == QuicStream::SENDER
-          or (*jt)->GetStreamDirectionType () == QuicStream::BIDIRECTIONAL)
+      if ((*jt)->GetStreamDirectionType () == QuicStream::Direction::SENDER
+          or (*jt)->GetStreamDirectionType () == QuicStream::Direction::BIDIRECTIONAL)
         {
           NS_LOG_INFO (
             "Sending data on stream " << (*jt)->GetStreamId ());
@@ -221,14 +221,14 @@ QuicL5Protocol::DispatchSend (Ptr<Packet> data, uint64_t streamId)
 
   if (!stream)
     {
-      CreateStream (QuicStream::SENDER, streamId);
+      CreateStream (QuicStream::Direction::SENDER, streamId);
     }
 
   stream = SearchStream (streamId);
   int sentData = 0;
 
-  if (stream->GetStreamDirectionType () == QuicStream::SENDER
-      or stream->GetStreamDirectionType () == QuicStream::BIDIRECTIONAL)
+  if (stream->GetStreamDirectionType () == QuicStream::Direction::SENDER
+      or stream->GetStreamDirectionType () == QuicStream::Direction::BIDIRECTIONAL)
     {
       sentData = stream->Send (data);
     }
@@ -270,7 +270,7 @@ QuicL5Protocol::DispatchRecv (Ptr<Packet> data, Address &address)
         }
     }
 
-  CreateStream (QuicStream::RECEIVER, currStreamNum);
+  CreateStream (QuicStream::Direction::RECEIVER, currStreamNum);
 
   for (auto it = disgregated.begin (); it != disgregated.end (); ++it)
     {
@@ -283,9 +283,9 @@ QuicL5Protocol::DispatchRecv (Ptr<Packet> data, Address &address)
           Ptr<QuicStreamBase> stream = SearchStream (sub.GetStreamId ());
 
           if (stream
-              and (stream->GetStreamDirectionType () == QuicStream::RECEIVER
+              and (stream->GetStreamDirectionType () == QuicStream::Direction::RECEIVER
                    or stream->GetStreamDirectionType ()
-                   == QuicStream::BIDIRECTIONAL))
+                   == QuicStream::Direction::BIDIRECTIONAL))
             {
               NS_LOG_INFO (
                 "Receiving frame on stream " << stream->GetStreamId () <<

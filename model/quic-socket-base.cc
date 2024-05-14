@@ -843,7 +843,7 @@ QuicSocketBase::Connect (const Address & address)
   if (!m_quicl5)
     {
       m_quicl5 = CreateStreamController ();
-      m_quicl5->CreateStream (QuicStream::BIDIRECTIONAL, 0);   // Create Stream 0 (necessary)
+      m_quicl5->CreateStream (QuicStream::Direction::BIDIRECTIONAL, 0);   // Create Stream 0 (necessary)
     }
 
   // check if the address is in a list of known and authenticated addresses

@@ -23,7 +23,7 @@
  */
 /*
 #define NS_LOG_APPEND_CONTEXT \
-  if (m_node and m_connectionId and (m_streamId >= 0)) { std::clog << " [node " << m_node->GetId () << " socket " << m_connectionId << " stream " << m_streamId << " " << StreamDirectionTypeToString () << "] "; }
+  if (m_node and m_connectionId and (m_streamId >= 0)) { std::clog << " [node " << m_node->GetId () << " socket " << m_connectionId << " stream " << m_streamId << " " << m_streamDirectionType << "] "; }
 */
 
 #include "ns3/abort.h"
@@ -81,10 +81,10 @@ QuicStreamBase::GetInstanceTypeId () const
 
 QuicStreamBase::QuicStreamBase (void)
   : QuicStream (),
-  m_streamType (NONE),
-  m_streamDirectionType (UNKNOWN),
-  m_streamStateSend (IDLE),
-  m_streamStateRecv (IDLE),
+  m_streamType (Type::NONE),
+  m_streamDirectionType (Direction::UNKNOWN),
+  m_streamStateSend (State::IDLE),
+  m_streamStateRecv (State::IDLE),
   m_node (0),
   m_connectionId (0),
   m_streamId (0),
@@ -120,16 +120,16 @@ QuicStreamBase::Send (Ptr<Packet> frame)
 {
   NS_LOG_FUNCTION (this);
 
-  SetStreamStateSendIf (m_streamStateSend == IDLE and (m_streamDirectionType == SENDER or m_streamDirectionType == BIDIRECTIONAL), OPEN);
+  SetStreamStateSendIf (m_streamStateSend == State::IDLE and (m_streamDirectionType == Direction::SENDER or m_streamDirectionType == Direction::BIDIRECTIONAL), State::OPEN);
 
-  if (m_streamStateSend == OPEN or m_streamStateSend == SEND)
+  if (m_streamStateSend == State::OPEN or m_streamStateSend == State::SEND)
     {
       int sent = AppendingTx (frame);
 
 
-      NS_LOG_LOGIC ("Sending packets in stream. TxBufSize = " << m_txBuffer->AppSize () << " AvailableWindow = " << AvailableWindow () << " state " << QuicStreamStateName[m_streamStateSend]);
+      NS_LOG_LOGIC ("Sending packets in stream. TxBufSize = " << m_txBuffer->AppSize () << " AvailableWindow = " << AvailableWindow () << " state " << m_streamStateSend);
 
-      if ((m_streamStateSend == OPEN or m_streamStateSend == SEND) and AvailableWindow () > 0)
+      if ((m_streamStateSend == State::OPEN or m_streamStateSend == State::SEND) and AvailableWindow () > 0)
         {
           if (!m_streamSendPendingDataEvent.IsRunning ())
             {
@@ -140,7 +140,7 @@ QuicStreamBase::Send (Ptr<Packet> frame)
     }
   else
     {
-      NS_ABORT_MSG ("Sending in state" << QuicStreamStateName[m_streamStateSend]);
+      NS_ABORT_MSG ("Sending in state" << m_streamStateSend);
       //m_errno = ERROR_NOTCONN;
       return -1;
     }
@@ -249,9 +249,9 @@ QuicStreamBase::SendDataFrame (SequenceNumber32 seq, uint32_t maxSize)
 {
   NS_LOG_FUNCTION (this);
 
-  if (m_streamStateSend == OPEN and (m_streamDirectionType == SENDER or m_streamDirectionType == BIDIRECTIONAL))
+  if (m_streamStateSend == State::OPEN and (m_streamDirectionType == Direction::SENDER or m_streamDirectionType == Direction::BIDIRECTIONAL))
     {
-      SetStreamStateSend (SEND);
+      SetStreamStateSend (State::SEND);
     }
 
   Ptr<Packet> frame = m_txBuffer->NextSequence (maxSize, seq);
@@ -270,9 +270,9 @@ QuicStreamBase::SendDataFrame (SequenceNumber32 seq, uint32_t maxSize)
       NS_LOG_WARN ("Sending error - could not append packet to socket buffer. Putting packet back in stream buffer");
       m_sentSize -= frame->GetSize ();
     }
-  else if (m_streamStateSend == SEND and m_fin and (m_streamDirectionType == SENDER or m_streamDirectionType == BIDIRECTIONAL))
+  else if (m_streamStateSend == State::SEND and m_fin and (m_streamDirectionType == Direction::SENDER or m_streamDirectionType == Direction::BIDIRECTIONAL))
     {
-      SetStreamStateSend (DATA_SENT);
+      SetStreamStateSend (State::DATA_SENT);
     }
 
   return size;
@@ -314,14 +314,14 @@ QuicStreamBase::Recv (Ptr<Packet> frame, const QuicSubheader& sub, Address &addr
           return -1;
         }
 
-      if (!(m_streamDirectionType == RECEIVER or m_streamDirectionType == BIDIRECTIONAL))
+      if (!(m_streamDirectionType == Direction::RECEIVER or m_streamDirectionType == Direction::BIDIRECTIONAL))
         {
           m_quicl5->SignalAbortConnection (QuicSubheader::TransportErrorCodes_t::PROTOCOL_VIOLATION,
                                            "Received RST_STREAM in send-only Stream");
           return -1;
         }
 
-      if ((m_streamStateRecv == DATA_READ or m_streamStateRecv == RESET_READ))
+      if ((m_streamStateRecv == State::DATA_READ or m_streamStateRecv == State::RESET_READ))
         {
           m_quicl5->SignalAbortConnection (QuicSubheader::TransportErrorCodes_t::PROTOCOL_VIOLATION,
                                            "Receiving RST_STREAM Frames in DATA_READ or RESET_READ Stream State");
@@ -335,12 +335,12 @@ QuicStreamBase::Recv (Ptr<Packet> frame, const QuicSubheader& sub, Address &addr
           return -1;
         }
 
-      SetStreamStateRecvIf (m_streamStateRecv == RECV or m_streamStateSend == SIZE_KNOWN or m_streamStateSend == DATA_RECVD, RESET_RECVD);
+      SetStreamStateRecvIf (m_streamStateRecv == State::RECV or m_streamStateSend == State::SIZE_KNOWN or m_streamStateSend == State::DATA_RECVD, State::RESET_RECVD);
 
       break;
 
     case QuicSubheader::MAX_STREAM_DATA:
-      if (!(m_streamDirectionType == SENDER or m_streamDirectionType == BIDIRECTIONAL))
+      if (!(m_streamDirectionType == Direction::SENDER or m_streamDirectionType == Direction::BIDIRECTIONAL))
         {
           m_quicl5->SignalAbortConnection (QuicSubheader::TransportErrorCodes_t::PROTOCOL_VIOLATION,
                                            "Received MAX_STREAM_DATA in receive-only Stream");
@@ -356,7 +356,7 @@ QuicStreamBase::Recv (Ptr<Packet> frame, const QuicSubheader& sub, Address &addr
 
     case QuicSubheader::STREAM_BLOCKED:
       // TODO block the stream
-      if (!(m_streamDirectionType == RECEIVER or m_streamDirectionType == BIDIRECTIONAL))
+      if (!(m_streamDirectionType == Direction::RECEIVER or m_streamDirectionType == Direction::BIDIRECTIONAL))
         {
           m_quicl5->SignalAbortConnection (QuicSubheader::TransportErrorCodes_t::PROTOCOL_VIOLATION,
                                            "Received STREAM_BLOCKED in send-only Stream");
@@ -367,7 +367,7 @@ QuicStreamBase::Recv (Ptr<Packet> frame, const QuicSubheader& sub, Address &addr
 
     case QuicSubheader::STOP_SENDING:
       // TODO implement a mechanism to stop sending data
-      if (!(m_streamDirectionType == SENDER or m_streamDirectionType == BIDIRECTIONAL))
+      if (!(m_streamDirectionType == Direction::SENDER or m_streamDirectionType == Direction::BIDIRECTIONAL))
         {
           m_quicl5->SignalAbortConnection (QuicSubheader::TransportErrorCodes_t::PROTOCOL_VIOLATION,
                                            "Received STOP_SENDING in receive-only Stream");
@@ -386,14 +386,14 @@ QuicStreamBase::Recv (Ptr<Packet> frame, const QuicSubheader& sub, Address &addr
     case QuicSubheader::STREAM111:
 
 
-      if (!(m_streamDirectionType == RECEIVER or m_streamDirectionType == BIDIRECTIONAL))
+      if (!(m_streamDirectionType == Direction::RECEIVER or m_streamDirectionType == Direction::BIDIRECTIONAL))
         {
           m_quicl5->SignalAbortConnection (QuicSubheader::TransportErrorCodes_t::PROTOCOL_VIOLATION,
                                            "Received STREAM in send-only Stream");
           return -1;
         }
 
-      if (!(m_streamStateRecv == IDLE or m_streamStateRecv == RECV or m_streamStateRecv == SIZE_KNOWN))
+      if (!(m_streamStateRecv == State::IDLE or m_streamStateRecv == State::RECV or m_streamStateRecv == State::SIZE_KNOWN))
         {
           m_quicl5->SignalAbortConnection (QuicSubheader::TransportErrorCodes_t::PROTOCOL_VIOLATION,
                                            "Received STREAM in State unequal to IDLE, RECV, SIZE_KNOWN");
@@ -407,7 +407,7 @@ QuicStreamBase::Recv (Ptr<Packet> frame, const QuicSubheader& sub, Address &addr
           return -1;
         }
 
-      SetStreamStateRecvIf (m_streamStateRecv == IDLE, RECV);
+      SetStreamStateRecvIf (m_streamStateRecv == State::IDLE, State::RECV);
 
       if (m_quicl5->ContainsTransportParameters () and m_streamId == 0)
         {
@@ -432,7 +432,7 @@ QuicStreamBase::Recv (Ptr<Packet> frame, const QuicSubheader& sub, Address &addr
           return -1;
         }
 
-      SetStreamStateRecvIf (m_streamStateRecv == RECV and m_fin, SIZE_KNOWN);
+      SetStreamStateRecvIf (m_streamStateRecv == State::RECV and m_fin, State::SIZE_KNOWN);
 
       if (m_recvSize == sub.GetOffset ())
         {
@@ -462,7 +462,7 @@ QuicStreamBase::Recv (Ptr<Packet> frame, const QuicSubheader& sub, Address &addr
             }
           NS_LOG_LOGIC ("Flushed RxBuffer - new offset " << m_recvSize << ", " << m_rxBuffer->Available () << "bytes available");
 
-          SetStreamStateRecvIf (m_streamStateRecv == SIZE_KNOWN and m_rxBuffer->Size () == 0, DATA_RECVD);
+          SetStreamStateRecvIf (m_streamStateRecv == State::SIZE_KNOWN and m_rxBuffer->Size () == 0, State::DATA_RECVD);
 
           if (m_streamId != 0 )
             {
@@ -478,7 +478,7 @@ QuicStreamBase::Recv (Ptr<Packet> frame, const QuicSubheader& sub, Address &addr
               NS_LOG_INFO ("Received handshake Message in Stream 0");
             }
 
-          SetStreamStateRecvIf (m_streamStateRecv == DATA_RECVD, DATA_READ);
+          SetStreamStateRecvIf (m_streamStateRecv == State::DATA_RECVD, State::DATA_READ);
 
         }
       else
@@ -522,7 +522,7 @@ QuicStreamBase::Recv (Ptr<Packet> frame, const QuicSubheader& sub, Address &addr
 //     case QuicSubheader::RST_STREAM:
 //       // TODO
 //       NS_ABORT_MSG_IF (!(m_streamDirectionType == SENDER or m_streamDirectionType == BIDIRECTIONAL), " Sending RstStream Frames in Receiver Stream");
-//       NS_ABORT_MSG_IF ((m_streamStateRecv == DATA_READ or m_streamStateRecv == RESET_READ or m_streamStateRecv == RESET_SENT), " Sending RstStream Frames in " << QuicStreamStateName[m_streamStateRecv] << " State");
+//       NS_ABORT_MSG_IF ((m_streamStateRecv == DATA_READ or m_streamStateRecv == RESET_READ or m_streamStateRecv == RESET_SENT), " Sending RstStream Frames in " << m_streamStateRecv << " State");
 
 //       SetStreamStateSendIf (m_streamStateSend == OPEN or m_streamStateSend == SEND or m_streamStateSend == DATA_SENT, RESET_SENT);
 //       //	if((m_streamStateSend = OPEN or m_streamStateSend == SEND or m_streamStateSend == DATA_SENT)){SetStreamStateSend(RESET_SENT);}
@@ -576,40 +576,40 @@ QuicStreamBase::GetMaxStreamData () const
 }
 
 void
-QuicStreamBase::SetStreamDirectionType (const QuicStreamDirectionTypes_t& streamDirectionType)
+QuicStreamBase::SetStreamDirectionType (const Direction& streamDirectionType)
 {
   NS_LOG_FUNCTION (this);
   m_streamDirectionType = streamDirectionType;
 }
 
-QuicStream::QuicStreamDirectionTypes_t
+QuicStream::Direction
 QuicStreamBase::GetStreamDirectionType ()
 {
   return m_streamDirectionType;
 }
 
 void
-QuicStreamBase::SetStreamType (const QuicStreamTypes_t& streamType)
+QuicStreamBase::SetStreamType (const Type& streamType)
 {
   NS_LOG_FUNCTION (this);
   m_streamType = streamType;
 }
 
 void
-QuicStreamBase::SetStreamStateSend (const QuicStreamStates_t& streamState)
+QuicStreamBase::SetStreamStateSend (const State& streamState)
 {
   NS_LOG_FUNCTION (this);
 
-  if (m_streamType == SERVER_INITIATED_BIDIRECTIONAL or m_streamType == SERVER_INITIATED_UNIDIRECTIONAL)
+  if (m_streamType == Type::SERVER_INITIATED_BIDIRECTIONAL or m_streamType == Type::SERVER_INITIATED_UNIDIRECTIONAL)
     {
 
-      NS_LOG_INFO ("Server Stream " << QuicStreamStateName[m_streamStateSend] << " -> " << QuicStreamStateName[streamState] << "");
+      NS_LOG_INFO ("Server Stream " << m_streamStateSend << " -> " << streamState << "");
 
     }
   else
     {
 
-      NS_LOG_INFO ("Client Stream " << QuicStreamStateName[m_streamStateSend] << " -> " << QuicStreamStateName[streamState] << "");
+      NS_LOG_INFO ("Client Stream " << m_streamStateSend << " -> " << streamState << "");
 
     }
 
@@ -617,7 +617,7 @@ QuicStreamBase::SetStreamStateSend (const QuicStreamStates_t& streamState)
 }
 
 void
-QuicStreamBase::SetStreamStateSendIf (bool condition, const QuicStreamStates_t& streamState)
+QuicStreamBase::SetStreamStateSendIf (bool condition, const State& streamState)
 {
   NS_LOG_FUNCTION (this);
   if (condition)
@@ -628,20 +628,20 @@ QuicStreamBase::SetStreamStateSendIf (bool condition, const QuicStreamStates_t& 
 
 
 void
-QuicStreamBase::SetStreamStateRecv (const QuicStreamStates_t& streamState)
+QuicStreamBase::SetStreamStateRecv (const State& streamState)
 {
   NS_LOG_FUNCTION (this);
 
-  if (m_streamType == SERVER_INITIATED_BIDIRECTIONAL or m_streamType == SERVER_INITIATED_UNIDIRECTIONAL)
+  if (m_streamType == Type::SERVER_INITIATED_BIDIRECTIONAL or m_streamType == Type::SERVER_INITIATED_UNIDIRECTIONAL)
     {
 
-      NS_LOG_INFO ("Server Stream " << QuicStreamStateName[m_streamStateRecv] << " -> " << QuicStreamStateName[streamState] << "");
+      NS_LOG_INFO ("Server Stream " << m_streamStateRecv << " -> " << streamState << "");
 
     }
   else
     {
 
-      NS_LOG_INFO ("Client Stream " << QuicStreamStateName[m_streamStateRecv] << " -> " << QuicStreamStateName[streamState] << "");
+      NS_LOG_INFO ("Client Stream " << m_streamStateRecv << " -> " << streamState << "");
 
     }
 
@@ -649,7 +649,7 @@ QuicStreamBase::SetStreamStateRecv (const QuicStreamStates_t& streamState)
 }
 
 void
-QuicStreamBase::SetStreamStateRecvIf (bool condition, const QuicStreamStates_t& streamState)
+QuicStreamBase::SetStreamStateRecvIf (bool condition, const State& streamState)
 {
   NS_LOG_FUNCTION (this);
   if (condition)
@@ -677,16 +677,16 @@ QuicStreamBase::SetStreamId (uint64_t streamId)
     {
 
     case 0:
-      SetStreamType (QuicStream::CLIENT_INITIATED_BIDIRECTIONAL);
+      SetStreamType (QuicStream::Type::CLIENT_INITIATED_BIDIRECTIONAL);
       break;
     case 1:
-      SetStreamType (QuicStream::SERVER_INITIATED_BIDIRECTIONAL);
+      SetStreamType (QuicStream::Type::SERVER_INITIATED_BIDIRECTIONAL);
       break;
     case 2:
-      SetStreamType (QuicStream::CLIENT_INITIATED_UNIDIRECTIONAL);
+      SetStreamType (QuicStream::Type::CLIENT_INITIATED_UNIDIRECTIONAL);
       break;
     case 3:
-      SetStreamType (QuicStream::SERVER_INITIATED_UNIDIRECTIONAL);
+      SetStreamType (QuicStream::Type::SERVER_INITIATED_UNIDIRECTIONAL);
       break;
     }
 
@@ -703,23 +703,6 @@ QuicStreamBase::SetConnectionId (uint64_t connId)
 {
   NS_LOG_FUNCTION (this << connId);
   m_connectionId = connId;
-}
-
-std::string
-QuicStreamBase::StreamDirectionTypeToString () const
-{
-  static const char* StreamDirectionTypeNames[6] = {
-    "SENDER",
-    "RECEIVER",
-    "BIDIRECTIONAL",
-    "UNKNOWN"
-  };
-
-  std::string typeDescription = "";
-
-  typeDescription.append (StreamDirectionTypeNames[m_streamDirectionType]);
-
-  return typeDescription;
 }
 
 void

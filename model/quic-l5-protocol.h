@@ -174,7 +174,7 @@ public:
    *
    * \param streamDirectionType the stream direction
    */
-  void CreateStream (const QuicStream::QuicStreamDirectionTypes_t streamDirectionType);
+  void CreateStream (const QuicStream::Direction streamDirectionType);
 
   /**
    * \brief create streamNum streams to be associated to this L5 object
@@ -183,7 +183,7 @@ public:
    *   i.e., unidirectional or bidirectional
    * \param the number of streams to be created
    */
-  void CreateStream (const QuicStream::QuicStreamDirectionTypes_t streamDirectionType, uint64_t streamNum);
+  void CreateStream (const QuicStream::Direction streamDirectionType, uint64_t streamNum);
 
   /**
    * \brief Get the maximum packet size from the underlying socket
