@@ -161,7 +161,7 @@ void
 QuicBbr::EnterStartup ()
 {
   NS_LOG_FUNCTION (this);
-  SetBbrState (BbrMode_t::BBR_STARTUP);
+  SetBbrState (Mode::STARTUP);
   m_pacingGain = m_highGain;
   m_cWndGain = m_highGain;
 }
@@ -173,7 +173,7 @@ QuicBbr::HandleRestartFromIdle (Ptr<QuicSocketState> tcb, const RateSample * rs)
   if (tcb->m_bytesInFlight.Get () == 0U && rs->m_isAppLimited)
     {
       m_idleRestart = true;
-      if (m_state.Get () == BbrMode_t::BBR_PROBE_BW)
+      if (m_state.Get () == Mode::PROBE_BW)
         {
           SetPacingRate (tcb, 1);
         }
@@ -237,7 +237,7 @@ void
 QuicBbr::CheckCyclePhase (Ptr<QuicSocketState> tcb, const struct RateSample * rs)
 {
   NS_LOG_FUNCTION (this << tcb << rs);
-  if (m_state.Get () == BbrMode_t::BBR_PROBE_BW && IsNextCyclePhase (tcb, rs))
+  if (m_state.Get () == Mode::PROBE_BW && IsNextCyclePhase (tcb, rs))
     {
       AdvanceCyclePhase ();
     }
@@ -272,7 +272,7 @@ void
 QuicBbr::EnterDrain ()
 {
   NS_LOG_FUNCTION (this);
-  SetBbrState (BbrMode_t::BBR_DRAIN);
+  SetBbrState (Mode::DRAIN);
   m_pacingGain = 1.0 / m_highGain;
   m_cWndGain = m_highGain;
 }
@@ -281,7 +281,7 @@ void
 QuicBbr::EnterProbeBW ()
 {
   NS_LOG_FUNCTION (this);
-  SetBbrState (BbrMode_t::BBR_PROBE_BW);
+  SetBbrState (Mode::PROBE_BW);
   m_pacingGain = 1;
   m_cWndGain = 2;
   m_cycleIndex = GAIN_CYCLE_LENGTH - 1 - (int) m_uv->GetValue (0, 8);
@@ -292,12 +292,12 @@ void
 QuicBbr::CheckDrain (Ptr<QuicSocketState> tcb)
 {
   NS_LOG_FUNCTION (this << tcb);
-  if (m_state.Get () == BbrMode_t::BBR_STARTUP && m_isPipeFilled)
+  if (m_state.Get () == Mode::STARTUP && m_isPipeFilled)
     {
       EnterDrain ();
     }
 
-  if (m_state.Get () == BbrMode_t::BBR_DRAIN && tcb->m_bytesInFlight <= InFlight (tcb, 1))
+  if (m_state.Get () == Mode::DRAIN && tcb->m_bytesInFlight <= InFlight (tcb, 1))
     {
       EnterProbeBW ();
     }
@@ -319,7 +319,7 @@ void
 QuicBbr::EnterProbeRTT ()
 {
   NS_LOG_FUNCTION (this);
-  SetBbrState (BbrMode_t::BBR_PROBE_RTT);
+  SetBbrState (Mode::PROBE_RTT);
   m_pacingGain = 1;
   m_cWndGain = 1;
 }
@@ -328,7 +328,7 @@ void
 QuicBbr::SaveCwnd (Ptr<const QuicSocketState> tcb)
 {
   NS_LOG_FUNCTION (this << tcb);
-  if (tcb->m_congState != TcpSocketState::CA_RECOVERY && m_state.Get () != BbrMode_t::BBR_PROBE_RTT)
+  if (tcb->m_congState != TcpSocketState::CA_RECOVERY && m_state.Get () != Mode::PROBE_RTT)
     {
       m_priorCwnd = tcb->m_cWnd;
     }
@@ -391,17 +391,17 @@ void
 QuicBbr::CheckProbeRTT (Ptr<QuicSocketState> tcb)
 {
   NS_LOG_FUNCTION (this << tcb);
-  NS_LOG_DEBUG (Simulator::Now () << "WhichState " << WhichState (m_state.Get ())
+  NS_LOG_DEBUG (Simulator::Now () << "WhichState " << m_state.Get ()
                                   << " m_rtPropExpired " << m_rtPropExpired << " !m_idleRestart "
                                   << !m_idleRestart);
-  if (m_state.Get () != BbrMode_t::BBR_PROBE_RTT && m_rtPropExpired && !m_idleRestart)
+  if (m_state.Get () != Mode::PROBE_RTT && m_rtPropExpired && !m_idleRestart)
     {
       EnterProbeRTT ();
       SaveCwnd (tcb);
       m_probeRttDoneStamp = Seconds (0);
     }
 
-  if (m_state.Get () == BbrMode_t::BBR_PROBE_RTT)
+  if (m_state.Get () == Mode::PROBE_RTT)
     {
       HandleProbeRTT (tcb);
     }
@@ -456,7 +456,7 @@ void
 QuicBbr::ModulateCwndForProbeRTT (Ptr<QuicSocketState> tcb)
 {
   NS_LOG_FUNCTION (this << tcb);
-  if (m_state.Get () == BbrMode_t::BBR_PROBE_RTT)
+  if (m_state.Get () == Mode::PROBE_RTT)
     {
       tcb->m_cWnd = std::min (tcb->m_cWnd.Get (), m_minPipeCwnd);
     }
@@ -548,34 +548,15 @@ QuicBbr::UpdateControlParameters (Ptr<QuicSocketState> tcb, const struct RateSam
   SetCwnd (tcb, rs);
 }
 
-std::string
-QuicBbr::WhichState (BbrMode_t mode) const
-{
-  switch (mode)
-    {
-      case 0:
-        return "BBR_STARTUP";
-      case 1:
-        return "BBR_DRAIN";
-      case 2:
-        return "BBR_PROBE_BW";
-      case 3:
-        return "BBR_PROBE_RTT";
-      default:
-        NS_ABORT_MSG ("Invalid BBR state");
-        return "";
-    }
-}
-
 void
-QuicBbr::SetBbrState (BbrMode_t mode)
+QuicBbr::SetBbrState (Mode mode)
 {
   NS_LOG_FUNCTION (this << mode);
-  NS_LOG_DEBUG (Simulator::Now () << " Changing from " << WhichState (m_state) << " to " << WhichState (mode));
+  NS_LOG_DEBUG (Simulator::Now () << " Changing from " << m_state << " to " << mode);
   m_state = mode;
 }
 
-uint32_t
+QuicBbr::Mode
 QuicBbr::GetBbrState ()
 {
   NS_LOG_FUNCTION (this);
@@ -680,7 +661,7 @@ QuicBbr::CwndEvent (Ptr<TcpSocketState> tcb,
       if (tcbd->m_bytesInFlight.Get () == 0 && tcbd->m_appLimitedUntil > tcbd->m_delivered)
         {
           m_idleRestart = true;
-          if (m_state.Get () == BbrMode_t::BBR_PROBE_BW && tcbd->m_appLimitedUntil > tcbd->m_delivered)
+          if (m_state.Get () == Mode::PROBE_BW && tcbd->m_appLimitedUntil > tcbd->m_delivered)
             {
               SetPacingRate (tcbd, 1);
             }
@@ -816,6 +797,24 @@ Ptr<TcpCongestionOps>
 QuicBbr::Fork (void)
 {
   return CopyObject<QuicBbr> (this);
+}
+
+std::ostream&
+operator<<(std::ostream& os, QuicBbr::Mode mode)
+{
+  switch (mode)
+  {
+  case QuicBbr::Mode::STARTUP:
+      return os << "STARTUP";
+  case QuicBbr::Mode::DRAIN:
+      return os << "DRAIN";
+  case QuicBbr::Mode::PROBE_BW:
+      return os << "PROBE_BW";
+  case QuicBbr::Mode::PROBE_RTT:
+      return os << "PROBE_RTT";
+  };
+  NS_ABORT_MSG ("Invalid BBR state");
+  return os << "UNKNOWN(" << static_cast<uint32_t>(mode) << ")";
 }
 
 } // namespace ns3
