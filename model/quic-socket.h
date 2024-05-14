@@ -79,17 +79,17 @@ public:
   /**
    * \brief Quic Socket types
    */
-  typedef enum
+  enum class Type
   {
     CLIENT = 0,  //!< Client Socket
     SERVER,      //!< Server Socket
     NONE         //!< Unknown Socket
-  } QuicSocketTypes_t;
+  };
 
   /**
    * \brief Quic Socket states
    */
-  typedef enum
+  enum class State
   {
     IDLE = 0,         //!< Idle (no state yet)
     LISTENING,        //!< Waiting for connection incoming
@@ -97,28 +97,21 @@ public:
     CONNECTING_CLT,   //!< Connection being set-up, client side
     OPEN,             //!< Connection open
     CLOSING,          //!< Termination of the connection
-    LAST_STATE,       //!< Last State for debug
-  } QuicStates_t;
-
-
-  /**
-   * \brief Literal names of QUIC Socket states for use in log messages
-   */
-  static const char* const QuicStateName[QuicSocket::LAST_STATE];
+  };
 
   /**
    * Get the socket type
    *
-   * \return a QuicSocketTypes_t with the socket type
+   * \return socket type
    */
-  QuicSocketTypes_t GetQuicSocketType () const;
+  Type GetQuicSocketType () const;
 
   /**
    * Set the socket type
    *
-   * \param socketType a QuicSocketTypes_t with the socket type
+   * \param socketType the socket type
    */
-  void SetQuicSocketType (QuicSocketTypes_t socketType);
+  void SetQuicSocketType (Type socketType);
 
   /**
    * Check if the Quic version indicates a Version Negotiation request
@@ -129,7 +122,7 @@ public:
   bool CheckVersionNegotiation (uint32_t version);
 
 protected:
-  QuicSocketTypes_t m_socketType;  //!< Quic Socket type
+  Type m_socketType;  //!< Quic Socket type
 
 private:
   // Indirect the attribute setting and getting through private virtual methods
@@ -162,6 +155,8 @@ private:
   //eventuali set e get di altri parametri interessanti
 
 };
+
+std::ostream& operator<<(std::ostream& os, QuicSocket::State state);
 
 } // namespace ns3
 

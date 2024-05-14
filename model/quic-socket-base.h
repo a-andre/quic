@@ -359,7 +359,7 @@ public:
    *
    * \return the state in the Congestion state machine
    */
-  QuicSocket::QuicStates_t GetSocketState () const;
+  QuicSocket::State GetSocketState () const;
 
   /**
    * \brief abort the connection due to an error
@@ -700,7 +700,7 @@ protected:
    *
    * \param the new state
    */
-  void SetState (TracedValue<QuicStates_t> state);
+  void SetState (TracedValue<State> state);
 
   /**
    * \brief Check if a version is supported by the QuicSocket
@@ -753,7 +753,7 @@ protected:
   Time m_defaultLatency;                                                                  //!< The default latency bound (only used by the EDF scheduler)
 
   // State-related attributes
-  TracedValue<QuicStates_t> m_socketState;  //!< State in the Congestion state machine
+  TracedValue<State> m_socketState;         //!< State in the Congestion state machine
   uint16_t m_transportErrorCode;            //!< Quic transport error code
   bool m_serverBusy;                        //!< If true, server too busy to accept new connections
   mutable enum SocketErrno m_errno;         //!< Socket error code

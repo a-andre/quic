@@ -39,12 +39,6 @@ NS_LOG_COMPONENT_DEFINE ("QuicSocket");
 
 NS_OBJECT_ENSURE_REGISTERED (QuicSocket);
 
-const char* const
-QuicSocket::QuicStateName[QuicSocket::LAST_STATE] = {
-  "IDLE", "LISTENING", "CONNECTING_SVR",
-  "CONNECTING_CLT", "OPEN", "CLOSING"
-};
-
 TypeId
 QuicSocket::GetTypeId (void)
 {
@@ -57,7 +51,7 @@ QuicSocket::GetTypeId (void)
 
 QuicSocket::QuicSocket ()
   : Socket (),
-  m_socketType (NONE)
+  m_socketType (Type::NONE)
 {
   NS_LOG_FUNCTION_NOARGS ();
 }
@@ -74,14 +68,14 @@ QuicSocket::~QuicSocket ()
   NS_LOG_FUNCTION_NOARGS ();
 }
 
-QuicSocket::QuicSocketTypes_t
+QuicSocket::Type
 QuicSocket::GetQuicSocketType () const
 {
   return m_socketType;
 }
 
 void
-QuicSocket::SetQuicSocketType (QuicSocketTypes_t m_socketType)
+QuicSocket::SetQuicSocketType (Type m_socketType)
 {
   QuicSocket::m_socketType = m_socketType;
 }
@@ -101,6 +95,27 @@ QuicSocket::CheckVersionNegotiation (uint32_t version)
     {
       return false;
     }
+}
+
+std::ostream&
+operator<<(std::ostream& os, QuicSocket::State state)
+{
+    switch (state)
+    {
+    case QuicSocket::State::IDLE:
+        return os << "IDLE";
+    case QuicSocket::State::LISTENING:
+        return os << "LISTENING";
+    case QuicSocket::State::CONNECTING_SVR:
+        return os << "CONNECTING_SVR";
+    case QuicSocket::State::CONNECTING_CLT:
+        return os << "CONNECTING_CLT";
+    case QuicSocket::State::OPEN:
+        return os << "OPEN";
+    case QuicSocket::State::CLOSING:
+        return os << "CLOSING";
+    };
+    return os << "UNKNOWN(" << static_cast<uint32_t>(state) << ")";
 }
 
 } // namespace ns3

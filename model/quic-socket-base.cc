@@ -441,7 +441,7 @@ QuicSocketBase::QuicSocketBase (void)
     m_quicl4 (0),
     m_quicl5 (0),
     m_socketState (
-      IDLE),
+      State::IDLE),
     m_transportErrorCode (
       QuicSubheader::TransportErrorCodes_t::NO_ERROR),
     m_serverBusy (false),
@@ -541,7 +541,7 @@ QuicSocketBase::QuicSocketBase (const QuicSocketBase& sock)   // Copy constructo
     m_node (sock.m_node),
     m_quicl4 (sock.m_quicl4),
     m_quicl5 (0),
-    m_socketState (LISTENING),
+    m_socketState (State::LISTENING),
     m_transportErrorCode (sock.m_transportErrorCode),
     m_serverBusy (sock.m_serverBusy),
     m_errno (sock.m_errno),
@@ -750,12 +750,12 @@ int
 QuicSocketBase::Listen (void)
 {
   NS_LOG_FUNCTION (this);
-  if (m_socketType == NONE)
+  if (m_socketType == Type::NONE)
     {
-      m_socketType = SERVER;
+      m_socketType = Type::SERVER;
     }
 
-  if (m_socketState != IDLE and m_socketState != QuicSocket::CONNECTING_SVR)
+  if (m_socketState != State::IDLE and m_socketState != QuicSocket::State::CONNECTING_SVR)
     {
       //m_errno = ERROR_INVAL;
       return -1;
@@ -764,7 +764,7 @@ QuicSocketBase::Listen (void)
   bool res = m_quicl4->SetListener (this);
   NS_ASSERT (res);
 
-  SetState (LISTENING);
+  SetState (State::LISTENING);
 
   return 0;
 }
@@ -835,9 +835,9 @@ QuicSocketBase::Connect (const Address & address)
     }
 
 
-  if (m_socketType == NONE)
+  if (m_socketType == Type::NONE)
     {
-      m_socketType = CLIENT;
+      m_socketType = Type::CLIENT;
     }
 
   if (!m_quicl5)
@@ -916,7 +916,7 @@ QuicSocketBase::AppendingTx (Ptr<Packet> frame)
 {
   NS_LOG_FUNCTION (this);
 
-  if (m_socketState != IDLE)
+  if (m_socketState != State::IDLE)
     {
       bool done = m_txBuffer->Add (frame);
       if (!done)
@@ -929,11 +929,11 @@ QuicSocketBase::AppendingTx (Ptr<Packet> frame)
           uint32_t win = AvailableWindow ();
           NS_LOG_DEBUG (
             "Added packet to the buffer - txBufSize = " << m_txBuffer->AppSize ()
-                                                        << " AvailableWindow = " << win << " state " << QuicStateName[m_socketState]);
+                                                        << " AvailableWindow = " << win << " state " << m_socketState);
         }
 
 
-      if (m_socketState != IDLE)
+      if (m_socketState != State::IDLE)
         {
           if (!m_sendPendingDataEvent.IsRunning ())
             {
@@ -951,7 +951,7 @@ QuicSocketBase::AppendingTx (Ptr<Packet> frame)
   else
     {
 
-      NS_ABORT_MSG ("Sending in state" << QuicStateName[m_socketState]);
+      NS_ABORT_MSG ("Sending in state" << m_socketState);
       return -1;
     }
 }
@@ -1042,7 +1042,7 @@ QuicSocketBase::SendPendingData (bool withAck)
         }
 
       // check the state of the socket!
-      if (m_socketState == CONNECTING_CLT || m_socketState == CONNECTING_SVR)
+      if (m_socketState == State::CONNECTING_CLT || m_socketState == State::CONNECTING_SVR)
         {
           NS_LOG_INFO ("CONNECTING_CLT and CONNECTING_SVR state; no data to transmit");
           break;
@@ -1110,7 +1110,7 @@ void
 QuicSocketBase::SetSegSize (uint32_t size)
 {
   NS_LOG_FUNCTION (this << size);
-  NS_ABORT_MSG_UNLESS (m_socketState == IDLE || m_tcb->m_segmentSize == size,
+  NS_ABORT_MSG_UNLESS (m_socketState == State::IDLE || m_tcb->m_segmentSize == size,
                        "Cannot change segment size dynamically.");
 
   m_tcb->m_segmentSize = size;
@@ -1338,17 +1338,17 @@ QuicSocketBase::SendDataPacket (SequenceNumber32 packetNumber,
 
   QuicHeader head;
 
-  if (m_socketState == CONNECTING_SVR)
+  if (m_socketState == State::CONNECTING_SVR)
     {
       m_connected = true;
       head = QuicHeader::CreateHandshake (m_connectionId, m_vers,
                                           packetNumber);
     }
-  else if (m_socketState == CONNECTING_CLT)
+  else if (m_socketState == State::CONNECTING_CLT)
     {
       head = QuicHeader::CreateInitial (m_connectionId, m_vers, packetNumber);
     }
-  else if (m_socketState == OPEN)
+  else if (m_socketState == State::OPEN)
     {
       if (!m_connected and !m_quicl4->Is0RTTHandshakeAllowed ())
         {
@@ -1419,7 +1419,7 @@ QuicSocketBase::SetReTxTimeout ()
 
   Time alarmDuration;
   // Handshake packets are outstanding
-  if (m_socketState == CONNECTING_CLT || m_socketState == CONNECTING_SVR)
+  if (m_socketState == State::CONNECTING_CLT || m_socketState == State::CONNECTING_SVR)
     {
       NS_LOG_INFO ("Connecting, set alarm");
       // Handshake retransmission alarm.
@@ -1503,7 +1503,7 @@ QuicSocketBase::ReTxTimeout ()
   NS_LOG_FUNCTION (this);
   NS_LOG_INFO ("ReTxTimeout Expired at time " << Simulator::Now ().GetSeconds ());
   // Handshake packets are outstanding)
-  if (m_tcb->m_alarmType == 0 && (m_socketState == CONNECTING_CLT || m_socketState == CONNECTING_SVR))
+  if (m_tcb->m_alarmType == 0 && (m_socketState == State::CONNECTING_CLT || m_socketState == State::CONNECTING_SVR))
     {
       // Handshake retransmission alarm.
       //TODO retransmit handshake packets
@@ -1644,7 +1644,7 @@ QuicSocketBase::Recv (uint32_t maxSize, uint32_t flags)
   NS_ABORT_MSG_IF (flags,
                    "use of flags is not supported in QuicSocketBase::Recv()");
 
-  if (m_rxBuffer->Size () == 0 && m_socketState == CLOSING)
+  if (m_rxBuffer->Size () == 0 && m_socketState == State::CLOSING)
     {
       return Create<Packet> ();
     }
@@ -1698,10 +1698,10 @@ QuicSocketBase::Close (void)
 
   m_receivedTransportParameters = false;
 
-  if (m_idleTimeoutEvent.IsRunning () and m_socketState != IDLE
-      and m_socketState != CLOSING)   //Connection Close from application signal
+  if (m_idleTimeoutEvent.IsRunning () and m_socketState != State::IDLE
+      and m_socketState != State::CLOSING)   //Connection Close from application signal
     {
-      SetState (CLOSING);
+      SetState (State::CLOSING);
       if (m_flushOnClose)
         {
           m_closeOnEmpty = true;
@@ -1711,10 +1711,10 @@ QuicSocketBase::Close (void)
           ScheduleCloseAndSendConnectionClosePacket ();
         }
     }
-  else if (m_idleTimeoutEvent.IsExpired () and m_socketState != CLOSING
-           and m_socketState != IDLE and m_socketState != LISTENING) //Connection Close due to Idle Period termination
+  else if (m_idleTimeoutEvent.IsExpired () and m_socketState != State::CLOSING
+           and m_socketState != State::IDLE and m_socketState != State::LISTENING) //Connection Close due to Idle Period termination
     {
-      SetState (CLOSING);
+      SetState (State::CLOSING);
       m_drainingPeriodEvent.Cancel ();
       NS_LOG_LOGIC (
         this << " Close Schedule DoClose at time " << Simulator::Now ().GetSeconds () << " to expire at time " << (Simulator::Now () + m_drainingPeriodTimeout.Get ()).GetSeconds ());
@@ -1723,14 +1723,14 @@ QuicSocketBase::Close (void)
                                                    this);
     }
   else if (m_idleTimeoutEvent.IsExpired ()
-           and m_drainingPeriodEvent.IsExpired () and m_socketState != CLOSING
-           and m_socketState != IDLE) //close last listening sockets
+           and m_drainingPeriodEvent.IsExpired () and m_socketState != State::CLOSING
+           and m_socketState != State::IDLE) //close last listening sockets
     {
       NS_LOG_LOGIC (this << " Closing listening socket");
       DoClose ();
     }
   else if (m_idleTimeoutEvent.IsExpired ()
-           and m_drainingPeriodEvent.IsExpired () and m_socketState == IDLE)
+           and m_drainingPeriodEvent.IsExpired () and m_socketState == State::IDLE)
     {
       NS_LOG_LOGIC (this << " Has already been closed");
     }
@@ -2047,7 +2047,7 @@ QuicSocketBase::SendInitialHandshake (uint8_t type,
     {
       NS_LOG_INFO ("Create HANDSHAKE");
       Ptr<Packet> p = Create<Packet> ();
-      if (m_socketState == CONNECTING_SVR)
+      if (m_socketState == State::CONNECTING_SVR)
         {
           p->AddHeader (OnSendingTransportParameters ());
         }
@@ -2440,24 +2440,24 @@ QuicSocketBase::OnReceivedTransportParameters (
 
   uint32_t mask = transportParameters.GetInitialMaxStreamIdBidi ()
     & 0x00000003;
-  if ((mask == 0) && m_socketState != CONNECTING_CLT)
+  if ((mask == 0) && m_socketState != State::CONNECTING_CLT)
     {
       // TODO AbortConnection(QuicSubheader::TransportErrorCodes_t::TRANSPORT_PARAMETER_ERROR, "Invalid Initial Max Stream Id Bidi value provided from Server");
       return;
     }
-  else if ((mask == 1) && m_socketState != CONNECTING_SVR)
+  else if ((mask == 1) && m_socketState != State::CONNECTING_SVR)
     {
       // TODO AbortConnection(QuicSubheader::TransportErrorCodes_t::TRANSPORT_PARAMETER_ERROR, "Invalid Initial Max Stream Id Bidi value provided from Client");
       return;
     }
 
   mask = transportParameters.GetInitialMaxStreamIdUni () & 0x00000003;
-  if ((mask == 2) && m_socketState != CONNECTING_CLT)
+  if ((mask == 2) && m_socketState != State::CONNECTING_CLT)
     {
       // TODO AbortConnection(QuicSubheader::TransportErrorCodes_t::TRANSPORT_PARAMETER_ERROR, "Invalid Initial Max Stream Id Uni value provided from Server");
       return;
     }
-  else if ((mask == 3) && m_socketState != CONNECTING_SVR)
+  else if ((mask == 3) && m_socketState != State::CONNECTING_SVR)
     {
       // TODO AbortConnection(QuicSubheader::TransportErrorCodes_t::TRANSPORT_PARAMETER_ERROR, "Invalid Initial Max Stream Id Uni value provided from Client");
       return;
@@ -2524,19 +2524,19 @@ QuicSocketBase::DoConnect (void)
 {
   NS_LOG_FUNCTION (this);
 
-  if (m_socketState != IDLE and m_socketState != QuicSocket::LISTENING)
+  if (m_socketState != State::IDLE and m_socketState != State::LISTENING)
     {
       //m_errno = ERROR_INVAL;
       return -1;
     }
 
-  if (m_socketState == LISTENING)
+  if (m_socketState == State::LISTENING)
     {
-      SetState (CONNECTING_SVR);
+      SetState (State::CONNECTING_SVR);
     }
-  else if (m_socketState == IDLE)
+  else if (m_socketState == State::IDLE)
     {
-      SetState (CONNECTING_CLT);
+      SetState (State::CONNECTING_CLT);
       QuicHeader q;
       SendInitialHandshake (QuicHeader::INITIAL, q, 0);
     }
@@ -2550,15 +2550,15 @@ QuicSocketBase::DoFastConnect (void)
   NS_ABORT_MSG_IF (!IsVersionSupported (m_vers),
                    "0RTT Handshake requested with wrong Initial Version");
 
-  if (m_socketState != IDLE)
+  if (m_socketState != State::IDLE)
     {
       //m_errno = ERROR_INVAL;
       return -1;
     }
 
-  else if (m_socketState == IDLE)
+  else if (m_socketState == State::IDLE)
     {
-      SetState (OPEN);
+      SetState (State::OPEN);
       Simulator::ScheduleNow (&QuicSocketBase::ConnectionSucceeded, this);
       m_congestionControl->CongestionStateSet (m_tcb,
                                                TcpSocketState::CA_OPEN);
@@ -2588,9 +2588,9 @@ QuicSocketBase::DoClose (void)
   NS_LOG_FUNCTION (this);
   NS_LOG_INFO (this << " DoClose at time " << Simulator::Now ().GetSeconds ());
 
-  if (m_socketState != IDLE)
+  if (m_socketState != State::IDLE)
     {
-      SetState (IDLE);
+      SetState (State::IDLE);
     }
 
   SetRecvCallback (MakeNullCallback<void, Ptr<Socket> > ());
@@ -2624,7 +2624,7 @@ QuicSocketBase::ReceivedData (Ptr<Packet> p, const QuicHeader& quicHeader,
   int onlyAckFrames = 0;
   bool unsupportedVersion = false;
 
-  if (quicHeader.IsORTT () and m_socketState == LISTENING)
+  if (quicHeader.IsORTT () and m_socketState == State::LISTENING)
     {
 
       if (m_serverBusy)
@@ -2644,14 +2644,14 @@ QuicSocketBase::ReceivedData (Ptr<Packet> p, const QuicHeader& quicHeader,
         QuicHeader::KeyPhase::ZERO :
         m_keyPhase =
           QuicHeader::KeyPhase::ONE;
-      SetState (OPEN);
+      SetState (State::OPEN);
       Simulator::ScheduleNow (&QuicSocketBase::ConnectionSucceeded, this);
       m_congestionControl->CongestionStateSet (m_tcb,
                                                TcpSocketState::CA_OPEN);
       m_couldContainTransportParameters = false;
 
     }
-  else if (quicHeader.IsInitial () and m_socketState == CONNECTING_SVR)
+  else if (quicHeader.IsInitial () and m_socketState == State::CONNECTING_SVR)
     {
       NS_LOG_INFO ("Server receives INITIAL");
       if (m_serverBusy)
@@ -2689,14 +2689,14 @@ QuicSocketBase::ReceivedData (Ptr<Packet> p, const QuicHeader& quicHeader,
         }
       return;
     }
-  else if (quicHeader.IsHandshake () and m_socketState == CONNECTING_CLT)   // Undefined compiler behaviour if i try to receive transport parameters
+  else if (quicHeader.IsHandshake () and m_socketState == State::CONNECTING_CLT)   // Undefined compiler behaviour if i try to receive transport parameters
     {
       NS_LOG_INFO ("Client receives HANDSHAKE");
 
       onlyAckFrames = m_quicl5->DispatchRecv (p, address);
       m_receivedPacketNumbers.push_back (quicHeader.GetPacketNumber ());
 
-      SetState (OPEN);
+      SetState (State::OPEN);
       Simulator::ScheduleNow (&QuicSocketBase::ConnectionSucceeded, this);
       m_congestionControl->CongestionStateSet (m_tcb,
                                                TcpSocketState::CA_OPEN);
@@ -2705,14 +2705,14 @@ QuicSocketBase::ReceivedData (Ptr<Packet> p, const QuicHeader& quicHeader,
       SendInitialHandshake (QuicHeader::HANDSHAKE, quicHeader, p);
       return;
     }
-  else if (quicHeader.IsHandshake () and m_socketState == CONNECTING_SVR)
+  else if (quicHeader.IsHandshake () and m_socketState == State::CONNECTING_SVR)
     {
       NS_LOG_INFO ("Server receives HANDSHAKE");
 
       onlyAckFrames = m_quicl5->DispatchRecv (p, address);
       m_receivedPacketNumbers.push_back (quicHeader.GetPacketNumber ());
 
-      SetState (OPEN);
+      SetState (State::OPEN);
       Simulator::ScheduleNow (&QuicSocketBase::ConnectionSucceeded, this);
       m_congestionControl->CongestionStateSet (m_tcb,
                                                TcpSocketState::CA_OPEN);
@@ -2720,7 +2720,7 @@ QuicSocketBase::ReceivedData (Ptr<Packet> p, const QuicHeader& quicHeader,
       return;
     }
   else if (quicHeader.IsVersionNegotiation ()
-           and m_socketState == CONNECTING_CLT)
+           and m_socketState == State::CONNECTING_CLT)
     {
       NS_LOG_INFO ("Client receives VERSION_NEGOTIATION");
 
@@ -2769,7 +2769,7 @@ QuicSocketBase::ReceivedData (Ptr<Packet> p, const QuicHeader& quicHeader,
         }
       return;
     }
-  else if (quicHeader.IsShort () and m_socketState == OPEN)
+  else if (quicHeader.IsShort () and m_socketState == State::OPEN)
     {
       // TODOACK here?
       // we need to check if the packet contains only an ACK frame
@@ -2779,7 +2779,7 @@ QuicSocketBase::ReceivedData (Ptr<Packet> p, const QuicHeader& quicHeader,
       onlyAckFrames = m_quicl5->DispatchRecv (p, address);
 
     }
-  else if (m_socketState == CLOSING)
+  else if (m_socketState == State::CLOSING)
     {
 
       AbortConnection (m_transportErrorCode,
@@ -2821,26 +2821,26 @@ QuicSocketBase::SetConnectionMaxData (uint32_t maxData)
   m_max_data = maxData;
 }
 
-QuicSocket::QuicStates_t
+QuicSocket::State
 QuicSocketBase::GetSocketState () const
 {
   return m_socketState;
 }
 
 void
-QuicSocketBase::SetState (TracedValue<QuicStates_t> newstate)
+QuicSocketBase::SetState (TracedValue<State> newstate)
 {
   NS_LOG_FUNCTION (this);
 
   if (m_quicl4->IsServer ())
     {
       NS_LOG_INFO (
-        "Server " << QuicStateName[m_socketState] << " -> " << QuicStateName[newstate] << "");
+        "Server " << m_socketState << " -> " << newstate << "");
     }
   else
     {
       NS_LOG_INFO (
-        "Client " << QuicStateName[m_socketState] << " -> " << QuicStateName[newstate] << "");
+        "Client " << m_socketState << " -> " << newstate << "");
     }
 
   m_socketState = newstate;
@@ -2889,15 +2889,15 @@ QuicSocketBase::AbortConnection (uint16_t transportErrorCode,
   QuicHeader quicHeader;
   switch (m_socketState)
     {
-      case CONNECTING_CLT:
+      case State::CONNECTING_CLT:
         quicHeader = QuicHeader::CreateInitial (m_connectionId, m_vers,
                                                 m_tcb->m_nextTxSequence++);
         break;
-      case CONNECTING_SVR:
+      case State::CONNECTING_SVR:
         quicHeader = QuicHeader::CreateHandshake (m_connectionId, m_vers,
                                                   m_tcb->m_nextTxSequence++);
         break;
-      case OPEN:
+      case State::OPEN:
         quicHeader =
           !m_connected ?
           QuicHeader::CreateHandshake (m_connectionId, m_vers,
@@ -2906,7 +2906,7 @@ QuicSocketBase::AbortConnection (uint16_t transportErrorCode,
                                    m_tcb->m_nextTxSequence++,
                                    !m_omit_connection_id, m_keyPhase);
         break;
-      case CLOSING:
+      case State::CLOSING:
         quicHeader = QuicHeader::CreateShort (m_connectionId,
                                               m_tcb->m_nextTxSequence++,
                                               !m_omit_connection_id,
@@ -3067,7 +3067,7 @@ QuicSocketBase::UpdateHighTxMark (SequenceNumber32 oldValue, SequenceNumber32 ne
 void
 QuicSocketBase::SetInitialSSThresh (uint32_t threshold)
 {
-  NS_ABORT_MSG_UNLESS ( (m_socketState == IDLE) || threshold == m_tcb->m_initialSsThresh,
+  NS_ABORT_MSG_UNLESS ( (m_socketState == State::IDLE) || threshold == m_tcb->m_initialSsThresh,
                         "QuicSocketBase::SetSSThresh() cannot change initial ssThresh after connection started.");
 
   m_tcb->m_initialSsThresh = threshold;
