@@ -878,7 +878,7 @@ QuicSocketBase::Send (Ptr<Packet> p, uint32_t flags)
   NS_LOG_FUNCTION (this << flags);
   int data = 0;
 
-  if (m_drainingPeriodEvent.IsRunning ())
+  if (m_drainingPeriodEvent.IsPending ())
     {
       NS_LOG_INFO ("Socket in draining state, cannot send packets");
       return 0;
@@ -900,7 +900,7 @@ QuicSocketBase::Send (Ptr<Packet> p)
 {
   NS_LOG_FUNCTION (this);
 
-  if (m_drainingPeriodEvent.IsRunning ())
+  if (m_drainingPeriodEvent.IsPending ())
     {
       NS_LOG_INFO ("Socket in draining state, cannot send packets");
       return 0;
@@ -935,7 +935,7 @@ QuicSocketBase::AppendingTx (Ptr<Packet> frame)
 
       if (m_socketState != IDLE)
         {
-          if (!m_sendPendingDataEvent.IsRunning ())
+          if (!m_sendPendingDataEvent.IsPending ())
             {
               m_sendPendingDataEvent = Simulator::Schedule (
                 TimeStep (1), &QuicSocketBase::SendPendingData, this,
@@ -1023,7 +1023,7 @@ QuicSocketBase::SendPendingData (bool withAck)
   while (availableWindow > 0 and m_txBuffer->AppSize () > 0)
     {
       // check draining period
-      if (m_drainingPeriodEvent.IsRunning ())
+      if (m_drainingPeriodEvent.IsPending ())
         {
           NS_LOG_INFO ("Draining period: no packets can be sent");
           return false;
@@ -1150,7 +1150,7 @@ QuicSocketBase::MaybeQueueAck ()
     {
       NS_LOG_INFO ("immediately send ACK - max number of unacked packets reached");
       m_queue_ack = true;
-      if (!m_sendAckEvent.IsRunning ())
+      if (!m_sendAckEvent.IsPending ())
         {
           m_sendAckEvent = Simulator::Schedule (TimeStep (1), &QuicSocketBase::SendAck, this);
         }
@@ -1160,7 +1160,7 @@ QuicSocketBase::MaybeQueueAck ()
     {
       NS_LOG_INFO ("immediately send ACK - some packets have been received out of order");
       m_queue_ack = true;
-      if (!m_sendAckEvent.IsRunning ())
+      if (!m_sendAckEvent.IsPending ())
         {
           m_sendAckEvent = Simulator::Schedule (TimeStep (1), &QuicSocketBase::SendAck, this);
         }
@@ -1172,14 +1172,14 @@ QuicSocketBase::MaybeQueueAck ()
         {
           NS_LOG_INFO ("immediately send ACK - more than 2 packets received");
           m_queue_ack = true;
-          if (!m_sendAckEvent.IsRunning ())
+          if (!m_sendAckEvent.IsPending ())
             {
               m_sendAckEvent = Simulator::Schedule (TimeStep (1), &QuicSocketBase::SendAck, this);
             }
         }
       else
         {
-          if (!m_delAckEvent.IsRunning ())
+          if (!m_delAckEvent.IsPending ())
             {
               NS_LOG_INFO ("Schedule a delayed ACK");
               // schedule a delayed ACK
@@ -1272,7 +1272,7 @@ QuicSocketBase::SendDataPacket (SequenceNumber32 packetNumber,
 {
   NS_LOG_FUNCTION (this << packetNumber << maxSize << withAck);
 
-  if (!m_drainingPeriodEvent.IsRunning ())
+  if (!m_drainingPeriodEvent.IsPending ())
     {
       m_idleTimeoutEvent.Cancel ();
       NS_LOG_LOGIC (
@@ -1698,7 +1698,7 @@ QuicSocketBase::Close (void)
 
   m_receivedTransportParameters = false;
 
-  if (m_idleTimeoutEvent.IsRunning () and m_socketState != IDLE
+  if (m_idleTimeoutEvent.IsPending () and m_socketState != IDLE
       and m_socketState != CLOSING)   //Connection Close from application signal
     {
       SetState (CLOSING);
@@ -2608,7 +2608,7 @@ QuicSocketBase::ReceivedData (Ptr<Packet> p, const QuicHeader& quicHeader,
   NS_LOG_INFO ("Received packet of size " << p->GetSize ());
 
   // check if this packet is not received during the draining period
-  if (!m_drainingPeriodEvent.IsRunning ())
+  if (!m_drainingPeriodEvent.IsPending ())
     {
       m_idleTimeoutEvent.Cancel ();   // reset the IDLE timeout
       NS_LOG_LOGIC (

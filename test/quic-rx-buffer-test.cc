@@ -376,9 +376,9 @@ class QuicRxBufferTestSuite : public TestSuite
 {
 public:
   QuicRxBufferTestSuite () :
-      TestSuite ("quic-rx-buffer", UNIT)
+      TestSuite ("quic-rx-buffer", Type::UNIT)
   {
-    AddTestCase (new QuicRxBufferTestCase, TestCase::QUICK);
+    AddTestCase (new QuicRxBufferTestCase, TestCase::Duration::QUICK);
   }
 };
 static QuicRxBufferTestSuite g_quicRxBufferTestSuite;

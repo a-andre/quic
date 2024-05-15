@@ -948,12 +948,12 @@ class QuicTxBufferTestSuite : public TestSuite
 {
 public:
   QuicTxBufferTestSuite () :
-      TestSuite ("quic-tx-buffer", UNIT)
+      TestSuite ("quic-tx-buffer", Type::UNIT)
   {
     LogComponentEnable ("QuicTxBufferTestSuite", LOG_LEVEL_ALL);
     LogComponentEnable ("QuicSocketTxBuffer", LOG_LEVEL_LOGIC);
 
-    AddTestCase (new QuicTxBufferTestCase, TestCase::QUICK);
+    AddTestCase (new QuicTxBufferTestCase, TestCase::Duration::QUICK);
   }
 };
 

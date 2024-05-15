@@ -131,7 +131,7 @@ QuicStreamBase::Send (Ptr<Packet> frame)
 
       if ((m_streamStateSend == OPEN or m_streamStateSend == SEND) and AvailableWindow () > 0)
         {
-          if (!m_streamSendPendingDataEvent.IsRunning ())
+          if (!m_streamSendPendingDataEvent.IsPending ())
             {
               m_streamSendPendingDataEvent = Simulator::Schedule (TimeStep (1), &QuicStreamBase::SendPendingData, this);
             }
